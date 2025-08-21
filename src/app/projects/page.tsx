@@ -13,10 +13,26 @@ type Project = {
 export const dynamic = 'force-dynamic';
 
 export default async function ProjectsPage() {
-  const host = (await headers()).get('host');
-  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-  const res = await fetch(`${protocol}://${host}/api/projects`, { cache: 'no-store' });
-  const projects: Project[] = await res.json();
+  let projects: Project[] = [];
+  
+  try {
+    const host = (await headers()).get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const res = await fetch(`${protocol}://${host}/api/projects`, { 
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (res.ok) {
+      projects = await res.json();
+    } else {
+      console.error('Failed to fetch projects:', res.status, res.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+  }
   
   return (
     <div className="min-h-screen py-20 px-6">

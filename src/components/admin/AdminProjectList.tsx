@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type Project = {
   id: number;
@@ -10,10 +10,39 @@ type Project = {
   featured: boolean;
 };
 
-export function AdminProjectList({ projects }: { projects: Project[] }) {
-  const [items, setItems] = useState<Project[]>(projects);
+type Props = {
+  projects: Project[];
+  refreshTrigger?: number;
+};
+
+export function AdminProjectList({ projects: initialProjects, refreshTrigger }: Props) {
+  const [items, setItems] = useState<Project[]>(initialProjects);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<Partial<Project>>({});
+
+  // Refresh projects when refreshTrigger changes
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('/api/projects');
+        if (res.ok) {
+          const data = await res.json();
+          setItems(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch projects:', error);
+      }
+    };
+
+    if (refreshTrigger !== undefined) {
+      fetchProjects();
+    }
+  }, [refreshTrigger]);
+
+  // Update items when initialProjects changes
+  useEffect(() => {
+    setItems(initialProjects);
+  }, [initialProjects]);
 
   async function remove(id: number) {
     const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
@@ -27,14 +56,29 @@ export function AdminProjectList({ projects }: { projects: Project[] }) {
 
   async function saveEdit() {
     if (!editingId) return;
+    
+    // Validate URLs before saving
+    const isValidUrl = (url: string | null | undefined): boolean => {
+      if (!url || url.trim() === '') return false;
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    
+    const imageUrl = isValidUrl(form.imageUrl) ? form.imageUrl : null;
+    const projectUrl = isValidUrl(form.projectUrl) ? form.projectUrl : null;
+    
     const res = await fetch(`/api/projects/${editingId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: form.title,
         description: form.description,
-        imageUrl: form.imageUrl ?? null,
-        projectUrl: form.projectUrl ?? null,
+        imageUrl,
+        projectUrl,
         featured: Boolean(form.featured),
       }),
     });

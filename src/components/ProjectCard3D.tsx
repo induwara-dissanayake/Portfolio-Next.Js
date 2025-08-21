@@ -13,6 +13,21 @@ type Props = {
 
 export function ProjectCard3D({ title, description, imageUrl, projectUrl, index = 0 }: Props) {
   const [isHovered, setIsHovered] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  // Check if URL is valid
+  const isValidUrl = (url: string | null | undefined): boolean => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const validImageUrl = isValidUrl(imageUrl) && !imageError ? imageUrl : null;
+  const validProjectUrl = isValidUrl(projectUrl) ? projectUrl : null;
 
   return (
     <motion.div
@@ -40,13 +55,14 @@ export function ProjectCard3D({ title, description, imageUrl, projectUrl, index 
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Image with parallax effect */}
-        {imageUrl && (
+        {validImageUrl && (
           <div className="relative h-48 overflow-hidden">
             <motion.img
-              src={imageUrl}
+              src={validImageUrl}
               alt={title}
               className="w-full h-full object-cover transition-transform duration-700"
               whileHover={{ scale: 1.1 }}
+              onError={() => setImageError(true)}
             />
             {/* Overlay gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -79,10 +95,10 @@ export function ProjectCard3D({ title, description, imageUrl, projectUrl, index 
 
           {/* Action buttons */}
           <div className="flex gap-3">
-            {projectUrl && (
+            {validProjectUrl && (
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Link
-                  href={projectUrl}
+                  href={validProjectUrl}
                   className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-300"
                 >
                   View Project

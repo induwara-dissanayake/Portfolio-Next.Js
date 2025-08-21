@@ -1,28 +1,52 @@
 "use client";
 import { useState } from 'react';
 
-export function AdminProjectForm() {
+type Props = {
+  onProjectAdded?: () => void;
+};
+
+export function AdminProjectForm({ onProjectAdded }: Props) {
   const [loading, setLoading] = useState(false);
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
     setLoading(true);
+    
+    // Validate URLs
+    const imageUrl = data.imageUrl as string;
+    const projectUrl = data.projectUrl as string;
+    
+    // Only include URLs if they are valid
+    const isValidUrl = (url: string) => {
+      if (!url) return false;
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    };
+    
     const res = await fetch('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         title: data.title,
         description: data.description,
-        imageUrl: data.imageUrl || null,
-        projectUrl: data.projectUrl || null,
+        imageUrl: isValidUrl(imageUrl) ? imageUrl : null,
+        projectUrl: isValidUrl(projectUrl) ? projectUrl : null,
         featured: Boolean(data.featured),
       }),
     });
     setLoading(false);
     if (res.ok) {
       form.reset();
-      location.reload();
+      if (onProjectAdded) {
+        onProjectAdded();
+      } else {
+        location.reload();
+      }
     }
   }
 

@@ -4,12 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "prisma generate --schema=prisma/schema.local.prisma && next dev",
     "prisma:generate": "prisma generate",
+    "prisma:generate:local": "prisma generate --schema=prisma/schema.local.prisma",
     "prisma:push": "prisma db push --accept-data-loss",
-    "build": "npm run prisma:generate && next build",
+    "prisma:push:local": "prisma db push --schema=prisma/schema.local.prisma --accept-data-loss",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio --schema=prisma/schema.local.prisma",
+    "build": "prisma generate && next build",
     "build:vercel": "prisma generate --schema=prisma/schema.postgres.prisma && prisma db push --schema=prisma/schema.postgres.prisma && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@next/mdx": "^15.4.6",
