@@ -1,8 +1,8 @@
 import { HeroSection } from "@/components/HeroSection";
 import { ProjectCard3D } from "@/components/ProjectCard3D";
-import { prisma } from "@/lib/prisma";
 import { Reveal } from "@/components/ui/Reveal";
 import ParticleBackground from "@/components/ui/ParticleBackground";
+import { headers } from 'next/headers';
 
 export type Project = {
   id: number;
@@ -13,11 +13,29 @@ export type Project = {
   featured: boolean;
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
-  const featured = await prisma.project.findMany({
-    where: { featured: true },
-    take: 3,
-  });
+  let featured: Project[] = [];
+  
+  try {
+    const host = (await headers()).get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+    const res = await fetch(`${protocol}://${host}/api/projects`, { 
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (res.ok) {
+      const allProjects: Project[] = await res.json();
+      // Filter for featured projects and take only 3
+      featured = allProjects.filter(p => p.featured).slice(0, 3);
+    }
+  } catch (error) {
+    console.error('Error fetching featured projects:', error);
+  }
 
   return (
     <div className="relative">
@@ -130,6 +148,21 @@ export default async function Home() {
               />
             ))}
           </div>
+
+          {featured.length === 0 && (
+            <Reveal>
+              <div className="text-center py-20">
+                <div className="text-6xl mb-4">🚀</div>
+                <h3 className="text-2xl font-semibold mb-4 text-white">
+                  Featured Projects Coming Soon
+                </h3>
+                <p className="text-gray-400 max-w-md mx-auto">
+                  I&apos;m currently working on some exciting featured projects. 
+                  Check back soon to see what I&apos;ve been building!
+                </p>
+              </div>
+            </Reveal>
+          )}
         </div>
       </section>
 
