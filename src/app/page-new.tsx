@@ -10,6 +10,8 @@ export type Project = {
   description: string;
   imageUrl?: string | null;
   projectUrl?: string | null;
+  githubUrl?: string | null;
+  technologies?: string | null;
   featured: boolean;
 };
 
@@ -61,7 +63,7 @@ export default async function Home() {
                   title: "Innovation",
                   description: "Cutting-edge solutions using the latest technologies and best practices"
                 }
-              ].map((item, index) => (
+              ].map((item) => (
                 <div key={item.title} className="text-center p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xl">
                   <div className="text-4xl mb-4">{item.icon}</div>
                   <h3 className="text-xl font-semibold mb-3 text-white">{item.title}</h3>
@@ -89,7 +91,7 @@ export default async function Home() {
               {[
                 "Next.js", "React", "TypeScript", "Node.js", "Prisma", "Tailwind CSS",
                 "Framer Motion", "Three.js", "MongoDB", "PostgreSQL", "AWS", "Vercel"
-              ].map((skill, index) => (
+              ].map((skill) => (
                 <div
                   key={skill}
                   className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xl text-center hover:bg-purple-500/10 transition-all duration-300 group"
@@ -122,10 +124,13 @@ export default async function Home() {
             {featured.map((project: Project, index: number) => (
               <ProjectCard3D
                 key={project.id}
+                id={project.id}
                 title={project.title}
                 description={project.description}
                 imageUrl={project.imageUrl}
                 projectUrl={project.projectUrl}
+                githubUrl={project.githubUrl}
+                technologies={project.technologies}
                 index={index}
               />
             ))}

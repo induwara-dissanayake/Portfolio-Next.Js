@@ -10,6 +10,8 @@ export type Project = {
   description: string;
   imageUrl?: string | null;
   projectUrl?: string | null;
+  githubUrl?: string | null;
+  technologies?: string | null;
   featured: boolean;
 };
 
@@ -103,20 +105,74 @@ export default async function Home() {
           </Reveal>
 
           <Reveal>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-              {[
-                "Next.js", "React", "TypeScript", "Node.js", "Prisma", "Tailwind CSS",
-                "Framer Motion", "Three.js", "MongoDB", "PostgreSQL", "AWS", "Vercel"
-              ].map((skill) => (
-                <div
-                  key={skill}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xl text-center hover:bg-purple-500/10 transition-all duration-300 group"
-                >
-                  <span className="text-gray-300 group-hover:text-white transition-colors">
-                    {skill}
-                  </span>
+            <div className="space-y-12">
+              {/* Frontend Technologies */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-6 text-center text-white">Frontend</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {["React", "Next.js", "Tailwind CSS", "Bootstrap"].map((skill) => (
+                    <div
+                      key={skill}
+                      className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 backdrop-blur-xl text-center hover:bg-blue-500/20 transition-all duration-300 group"
+                    >
+                      <span className="text-blue-300 group-hover:text-white transition-colors font-medium">
+                        {skill}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Backend Technologies */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-6 text-center text-white">Backend</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {["Node.js", "Express.js", "Python"].map((skill) => (
+                    <div
+                      key={skill}
+                      className="p-4 rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 backdrop-blur-xl text-center hover:bg-green-500/20 transition-all duration-300 group"
+                    >
+                      <span className="text-green-300 group-hover:text-white transition-colors font-medium">
+                        {skill}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Database Technologies */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-6 text-center text-white">Database</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {["MySQL", "PostgreSQL", "MongoDB", "Prisma"].map((skill) => (
+                    <div
+                      key={skill}
+                      className="p-4 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 border border-orange-500/20 backdrop-blur-xl text-center hover:bg-orange-500/20 transition-all duration-300 group"
+                    >
+                      <span className="text-orange-300 group-hover:text-white transition-colors font-medium">
+                        {skill}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tools & Deployment */}
+              <div>
+                <h3 className="text-2xl font-semibold mb-6 text-center text-white">Tools & Deployment</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {["Figma", "Vercel", "AWS", "Firebase"].map((skill) => (
+                    <div
+                      key={skill}
+                      className="p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 backdrop-blur-xl text-center hover:bg-purple-500/20 transition-all duration-300 group"
+                    >
+                      <span className="text-purple-300 group-hover:text-white transition-colors font-medium">
+                        {skill}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </Reveal>
         </div>
@@ -140,10 +196,13 @@ export default async function Home() {
             {featured.map((project: Project, index: number) => (
               <ProjectCard3D
                 key={project.id}
+                id={project.id}
                 title={project.title}
                 description={project.description}
                 imageUrl={project.imageUrl}
                 projectUrl={project.projectUrl}
+                githubUrl={project.githubUrl}
+                technologies={project.technologies}
                 index={index}
               />
             ))}

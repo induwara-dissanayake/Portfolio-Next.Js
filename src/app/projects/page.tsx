@@ -8,6 +8,8 @@ type Project = {
   description: string;
   imageUrl?: string | null;
   projectUrl?: string | null;
+  githubUrl?: string | null;
+  technologies?: string | null;
 };
 
 export const dynamic = 'force-dynamic';
@@ -54,10 +56,13 @@ export default async function ProjectsPage() {
           {projects.map((project: Project, index: number) => (
             <ProjectCard3D
               key={project.id}
+              id={project.id}
               title={project.title}
               description={project.description}
               imageUrl={project.imageUrl}
               projectUrl={project.projectUrl}
+              githubUrl={project.githubUrl}
+              technologies={project.technologies}
               index={index}
             />
           ))}

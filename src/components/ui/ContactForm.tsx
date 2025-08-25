@@ -75,7 +75,7 @@ export default function ContactForm() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm">Email</p>
-                  <p className="text-white">contact@induwara.dev</p>
+                  <p className="text-white">sahasrainduwara35@gmail.com</p>
                 </div>
               </motion.div>
 
@@ -88,7 +88,6 @@ export default function ContactForm() {
                 </div>
                 <div>
                   <p className="text-gray-400 text-sm">Location</p>
-                  <p className="text-white">Available Worldwide</p>
                 </div>
               </motion.div>
             </div>

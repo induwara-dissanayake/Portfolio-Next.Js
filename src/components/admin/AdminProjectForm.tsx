@@ -34,8 +34,11 @@ export function AdminProjectForm({ onProjectAdded }: Props) {
       body: JSON.stringify({
         title: data.title,
         description: data.description,
+        longDescription: data.longDescription || null,
         imageUrl: isValidUrl(imageUrl) ? imageUrl : null,
         projectUrl: isValidUrl(projectUrl) ? projectUrl : null,
+        githubUrl: isValidUrl(data.githubUrl as string) ? data.githubUrl : null,
+        technologies: data.technologies || null,
         featured: Boolean(data.featured),
       }),
     });
@@ -51,17 +54,67 @@ export function AdminProjectForm({ onProjectAdded }: Props) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-2 rounded border p-4">
-      <h2 className="text-xl font-semibold">Add Project</h2>
-      <input className="w-full rounded border p-2" name="title" placeholder="Title" required />
-      <textarea className="w-full rounded border p-2" name="description" placeholder="Description" required />
-      <input className="w-full rounded border p-2" name="imageUrl" placeholder="Image URL" />
-      <input className="w-full rounded border p-2" name="projectUrl" placeholder="Project URL" />
-      <label className="flex items-center gap-2 text-sm">
-        <input type="checkbox" name="featured" /> Featured
+    <form onSubmit={onSubmit} className="space-y-4 rounded-xl border border-white/10 bg-white/5 p-6">
+      <h2 className="text-2xl font-semibold mb-4">Add Project</h2>
+      
+      <div className="grid md:grid-cols-2 gap-4">
+        <input 
+          className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+          name="title" 
+          placeholder="Project Title" 
+          required 
+        />
+        <input 
+          className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+          name="imageUrl" 
+          placeholder="Image URL (optional)" 
+        />
+      </div>
+
+      <textarea 
+        className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+        name="description" 
+        placeholder="Short Description" 
+        rows={3}
+        required 
+      />
+
+      <textarea 
+        className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+        name="longDescription" 
+        placeholder="Detailed Description (optional)" 
+        rows={4}
+      />
+
+      <div className="grid md:grid-cols-2 gap-4">
+        <input 
+          className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+          name="projectUrl" 
+          placeholder="Live Demo URL (optional)" 
+        />
+        <input 
+          className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+          name="githubUrl" 
+          placeholder="GitHub Repository URL (optional)" 
+        />
+      </div>
+
+      <input 
+        className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+        name="technologies" 
+        placeholder="Technologies (comma-separated)" 
+      />
+
+      <label className="flex items-center gap-3 text-white">
+        <input type="checkbox" name="featured" className="w-4 h-4 rounded border-white/20" /> 
+        <span className="font-medium">Featured Project</span>
       </label>
-      <button className="rounded bg-black text-white dark:bg-white dark:text-black px-4 py-2" disabled={loading}>
-        {loading ? 'Saving...' : 'Save'}
+      
+      <button 
+        className="w-full rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-3 font-semibold transition-all duration-300 disabled:opacity-50" 
+        disabled={loading}
+      >
+        {loading ? 'Saving...' : 'Save Project'}
       </button>
     </form>
   );
