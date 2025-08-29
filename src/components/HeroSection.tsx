@@ -74,7 +74,7 @@ export function HeroSection() {
             maxWidth: '100%'
           }}
         >
-          <GlitchText className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500 bg-clip-text text-transparent text-responsive">
+          <GlitchText className="text-purple-400 md:gradient-text text-responsive">
             INDUWARA
           </GlitchText>
         </motion.h1>

@@ -14,9 +14,13 @@ body {
   max-width: 100%;
 }
 
-/* Fix for background-clip: text on mobile browsers */
-@supports not (-webkit-background-clip: text) {
-  .bg-clip-text {
-    color: #a855f7; /* fallback purple color */
+/* Gradient text only for desktop to avoid mobile issues */
+@media (min-width: 768px) {
+  .gradient-text {
+    background: linear-gradient(to right, rgb(168, 85, 247), rgb(236, 72, 153), rgb(6, 182, 212));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
   }
 }
