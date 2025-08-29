@@ -4,4 +4,19 @@
 html,
 body {
   min-height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Ensure text doesn't break layout on mobile */
+.text-responsive {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+/* Fix for background-clip: text on mobile browsers */
+@supports not (-webkit-background-clip: text) {
+  .bg-clip-text {
+    color: #a855f7; /* fallback purple color */
+  }
 }

@@ -21,7 +21,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-2">
       {/* Animated background elements */}
       <motion.div
         className="absolute inset-0 opacity-20"
@@ -49,13 +49,13 @@ export function HeroSection() {
         transition={{ type: "spring", damping: 30, stiffness: 200 }}
       />
 
-      <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto w-full">
         {/* Greeting */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="mb-6"
+          className="mb-4 sm:mb-6"
         >
           <span className="text-lg md:text-xl text-purple-400 font-mono">
             Hello World, I&apos;m
@@ -67,9 +67,14 @@ export function HeroSection() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="text-6xl md:text-8xl lg:text-9xl font-black mb-8"
+          className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black mb-8 leading-tight break-words"
+          style={{ 
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word',
+            maxWidth: '100%'
+          }}
         >
-          <GlitchText className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500 bg-clip-text text-transparent">
+          <GlitchText className="bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500 bg-clip-text text-transparent text-responsive">
             INDUWARA
           </GlitchText>
         </motion.h1>
@@ -79,11 +84,11 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 1.2 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <TypingAnimation
             text="Full-Stack Developer • AI Creator • UI/UX Enthusiast"
-            className="text-2xl md:text-4xl font-light text-gray-300"
+            className="text-lg sm:text-2xl md:text-4xl font-light text-gray-300"
             duration={80}
           />
         </motion.div>
@@ -93,7 +98,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 2 }}
-          className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-12 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-8 sm:mb-12 leading-relaxed px-2"
         >
           I craft exceptional digital experiences with modern web technologies,
           bringing ideas to life through clean code and stunning design.

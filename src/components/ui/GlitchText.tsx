@@ -18,8 +18,16 @@ export default function GlitchText({ children, className = '' }: GlitchTextProps
         ],
       }}
       transition={{ duration: 0.3, times: [0, 0.5, 1] }}
+      style={{ 
+        display: 'inline-block',
+        maxWidth: '100%',
+        wordBreak: 'break-word'
+      }}
     >
-      <span className="relative z-10">{children}</span>
+      <span className="relative z-10" style={{ 
+        display: 'inline-block',
+        maxWidth: '100%'
+      }}>{children}</span>
       <motion.span
         className="absolute inset-0 opacity-0"
         style={{
