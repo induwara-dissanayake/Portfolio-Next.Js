@@ -1,56 +1,84 @@
-# Portfolio (Next.js 15 + Tailwind + Prisma)
+# 🌐 Personal Portfolio Website
 
-A full-stack portfolio with public pages, MDX blog, and a hidden admin panel for managing projects.
+<div align="left">
 
-## Tech
+[![Next.js](https://img.shields.io/badge/Next.js-13+-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Framer Motion](https://img.shields.io/badge/Framer%20Motion-Animation-0055FF?logo=framer&logoColor=white)](https://www.framer.com/motion/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-DB-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Vercel](https://img.shields.io/badge/Hosted%20on-Vercel-black?logo=vercel&logoColor=white)](https://vercel.com/)
+[![Status](https://img.shields.io/badge/Status-Live%20Project-brightgreen)](https://portfolio-induwara.vercel.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-- Next.js 15 (App Router), React 19, TypeScript
-- Tailwind CSS v4
-- Framer Motion (client-only)
-- Prisma ORM + SQLite (default)
-- next-themes for dark mode
-- JWT cookie auth (via `jose`)
+</div>
 
-## Setup
+A **modern portfolio website** built with **Next.js** and styled using **Tailwind CSS** with smooth **Framer Motion animations**.  
+It highlights projects, skills, and achievements with a clean, minimal, and responsive design — hosted on **Vercel**.
 
-1. Install deps
+🔗 **Live Demo:** [portfolio-induwara.vercel.app](https://portfolio-induwara.vercel.app/)
 
-```powershell
-npm install
-```
+---
 
-2. Configure env
-   Create `.env` (already created) and set values:
+## ✨ Features
 
-```
-DATABASE_URL="file:./dev.db"
-ADMIN_PASSWORD="supersecret"
-AUTH_SECRET="change-me"
-```
+- ⚡ **Next.js (App Router)** for SSR & optimized performance  
+- 🎨 **Tailwind CSS** for responsive, utility-first styling  
+- 🌀 **Framer Motion** for smooth animations & transitions  
+- 🗄️ **Prisma + PostgreSQL** for structured project/experience data  
+- 📱 Fully **responsive design** (mobile → desktop)  
+- 🚀 **Deployed on Vercel** with automatic builds & CI/CD  
 
-3. DB migrate and generate
+---
 
-```powershell
-npx prisma migrate dev --name init
-npx prisma generate
-```
+## 📂 Sections
 
-4. Dev
+- **Hero** → Short intro & CTA  
+- **About** → Education & background  
+- **Skills** → Technical skillset with icons  
+- **Projects** → Highlighted works with links to GitHub & live demos  
+- **Experience** → Work / freelance experience  
+- **Contact** → Direct contact form + social links  
 
-```powershell
-npm run dev
-```
+---
 
-## Admin
+## 📷 Screenshots
 
-- Go to `/admin/login` and login with the password from `.env` (username can be any).
-- Admin pages are protected by middleware; CRUD uses `/api/projects` endpoints.
+<p align="left">
+  <img src="assets/screenshots/home.png" width="32%">
+  <img src="assets/screenshots/projects.png" width="32%">
+  <img src="assets/screenshots/about.png" width="32%">
+   <img src="assets/screenshots/contact.png" width="32%">
+  <img src="assets/screenshots/technologies.png" width="32%">
+</p>
 
-## Blog
+---
 
-- Add MDX files in `src/content/blog/*.mdx` with frontmatter `{ title, excerpt }`.
+# 🎥 Demo Video
 
-## Deploy (Vercel)
+[![Watch the demo](assets/screenshots/demo_preview.gif)](https://youtu.be/VPIRUsDEv3Q)
 
-- Add `DATABASE_URL`, `ADMIN_PASSWORD`, `AUTH_SECRET` in Vercel env.
-- Prisma with SQLite works on Vercel; for Postgres, update `DATABASE_URL` and run migrations.
+---
+
+## 🧱 Tech Stack
+
+- **Framework:** Next.js 13+ (React)  
+- **Styling:** Tailwind CSS  
+- **Animations:** Framer Motion  
+- **Database/ORM:** Prisma + PostgreSQL  
+- **Deployment:** Vercel  
+
+---
+
+## 📌 Project Status
+This project is **live** and actively maintained as my personal portfolio.  
+
+---
+
+## ✍️ Author
+**Induwara Dissanayake**  
+📧 Email: sahasrainduwara35@gmail.com  
+🌐 Portfolio: [portfolio-induwara.vercel.app](https://portfolio-induwara.vercel.app/)  
+ 
+
+---
