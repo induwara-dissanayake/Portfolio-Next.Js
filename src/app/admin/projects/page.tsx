@@ -7,8 +7,11 @@ type Project = {
   id: number;
   title: string;
   description: string;
+  longDescription?: string | null;
   imageUrl?: string | null;
   projectUrl?: string | null;
+  githubUrl?: string | null;
+  technologies?: string | null;
   featured: boolean;
 };
 
