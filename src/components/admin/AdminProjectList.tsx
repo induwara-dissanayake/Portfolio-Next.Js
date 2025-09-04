@@ -125,12 +125,17 @@ export function AdminProjectList({ projects: initialProjects, refreshTrigger }: 
                   value={form.longDescription || ''}
                   onChange={(e) => setForm((f) => ({ ...f, longDescription: e.target.value }))}
                 />
-                <input
-                  className="w-full rounded border p-2 text-gray-900"
-                  placeholder="Image URL (optional)"
-                  value={form.imageUrl || ''}
-                  onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
-                />
+                <div className="space-y-1">
+                  <input
+                    className="w-full rounded border p-2 text-gray-900"
+                    placeholder="Image URL (e.g., https://example.com/image.jpg)"
+                    value={form.imageUrl || ''}
+                    onChange={(e) => setForm((f) => ({ ...f, imageUrl: e.target.value }))}
+                  />
+                  <p className="text-xs text-gray-500">
+                    Use direct image links or public hosting services
+                  </p>
+                </div>
                 <input
                   className="w-full rounded border p-2 text-gray-900"
                   placeholder="Live Demo URL (optional)"

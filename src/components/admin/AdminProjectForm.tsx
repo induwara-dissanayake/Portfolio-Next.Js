@@ -64,11 +64,16 @@ export function AdminProjectForm({ onProjectAdded }: Props) {
           placeholder="Project Title" 
           required 
         />
-        <input 
-          className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
-          name="imageUrl" 
-          placeholder="Image URL (optional)" 
-        />
+        <div className="space-y-2">
+          <input 
+            className="w-full rounded-lg border border-white/20 bg-white/10 p-3 text-white placeholder-gray-400" 
+            name="imageUrl" 
+            placeholder="Image URL (e.g., https://example.com/image.jpg)" 
+          />
+          <p className="text-xs text-gray-400">
+            💡 Tip: Use direct image links (.jpg, .png, .webp) or public image hosting services like Imgur, Cloudinary, or GitHub Pages
+          </p>
+        </div>
       </div>
 
       <textarea 

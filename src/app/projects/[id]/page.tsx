@@ -137,13 +137,19 @@ export default function ProjectDetailPage({ params }: Props) {
             transition={{ duration: 0.6 }}
           >
             {/* Project Image */}
-            {validImageUrl && (
+            {validImageUrl ? (
               <div className="relative rounded-2xl overflow-hidden mb-6 group">
                 {imageError ? (
-                  <div className="w-full h-80 bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">🖼️</div>
-                      <span>Image unavailable</span>
+                  <div className="w-full h-80 bg-gray-800/50 border border-gray-600 rounded-2xl flex items-center justify-center text-gray-400">
+                    <div className="text-center p-6">
+                      <div className="text-6xl mb-4">🖼️</div>
+                      <p className="text-lg mb-2">Image not available</p>
+                      <p className="text-sm text-gray-500">
+                        The image URL might be invalid or the image might not be accessible
+                      </p>
+                      <p className="text-xs text-gray-600 mt-2">
+                        URL: {validImageUrl}
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -157,6 +163,13 @@ export default function ProjectDetailPage({ params }: Props) {
                   />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            ) : (
+              <div className="w-full h-80 bg-gradient-to-br from-purple-900/20 to-pink-900/20 border border-purple-500/30 rounded-2xl flex items-center justify-center mb-6">
+                <div className="text-center text-gray-400">
+                  <div className="text-6xl mb-4">📷</div>
+                  <p className="text-lg">No image provided</p>
+                </div>
               </div>
             )}
           </motion.div>
