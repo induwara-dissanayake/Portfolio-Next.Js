@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Github, Maximize2, X, ArrowUpRight, Monitor } from "lucide-react";
+import { ExternalLink, Github, ArrowUpRight, Maximize2, X } from "lucide-react";
 
 export interface ProjectItem {
   id: number;
@@ -152,12 +152,6 @@ export function WorksSection() {
                     <span className="absolute top-3 left-3 bg-[hsl(var(--hue),12%,8%)]/90 backdrop-blur-md text-[hsl(var(--hue),75%,60%)] font-bold font-syne px-3 py-1 text-sm rounded-md border border-[hsl(var(--hue),8%,20%)]">
                       {project.number}
                     </span>
-
-                    {project.category === "Desktop app" && (
-                      <span className="absolute top-3 right-3 bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] font-bold text-[10px] uppercase px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
-                        <Monitor className="w-3 h-3" /> Live Web Demo
-                      </span>
-                    )}
                   </div>
 
                   {/* Title & Description */}
@@ -194,8 +188,7 @@ export function WorksSection() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm font-bold text-[hsl(var(--hue),75%,60%)] hover:underline group-hover:translate-x-1 transition-transform"
                   >
-                    {project.category === "Desktop app" ? "Launch Interactive Web Demo" : "Explore Project"}{" "}
-                    <ArrowUpRight className="w-4 h-4" />
+                    Explore Project <ArrowUpRight className="w-4 h-4" />
                   </a>
                 </div>
               </motion.div>
@@ -275,8 +268,7 @@ export function WorksSection() {
                     rel="noopener noreferrer"
                     className="btn-bianca text-sm py-3 px-6 rounded-full flex items-center gap-2 font-bold"
                   >
-                    {selectedProject.category === "Desktop app" ? "Launch Interactive Web Demo" : "Open Live Demo / Link"}{" "}
-                    <ExternalLink className="w-4 h-4" />
+                    Open Live Demo / Link <ExternalLink className="w-4 h-4" />
                   </a>
                   {selectedProject.githubUrl && (
                     <a

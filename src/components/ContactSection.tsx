@@ -215,11 +215,11 @@ export function ContactSection() {
               </div>
 
               <h3 className="text-2xl font-bold font-syne text-[hsl(var(--hue),24%,98%)] mb-3">
-                Message Sent &amp; Logged!
+                Message Sent Successfully!
               </h3>
 
               <p className="text-sm text-[hsl(var(--hue),4%,70%)] leading-relaxed mb-8">
-                Thank you for reaching out! Your message details have been safely recorded into our system log file (<code className="text-[hsl(var(--hue),75%,60%)]">messages.log</code>). I will get back to you shortly.
+                Thank you for reaching out! Your message has been received. I will review it and get back to you as soon as possible.
               </p>
 
               <button
