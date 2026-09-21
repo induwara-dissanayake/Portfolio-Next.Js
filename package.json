@@ -12,7 +12,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio --schema=prisma/schema.local.prisma",
     "build": "prisma generate && next build",
-    "build:vercel": "prisma generate --schema=prisma/schema.postgres.prisma && prisma db push --schema=prisma/schema.postgres.prisma && next build",
+    "build:vercel": "prisma generate --schema=prisma/schema.postgres.prisma && node -e \"if (process.env.DATABASE_URL) { require('child_process').execSync('npx prisma db push --   schema=prisma/schema.postgres.prisma', { stdio: 'inherit' }); }\" && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate"
