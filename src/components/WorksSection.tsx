@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ExternalLink, Github, Maximize2, X, ArrowUpRight } from "lucide-react";
+import { ExternalLink, Github, Maximize2, X, ArrowUpRight, Monitor } from "lucide-react";
 
 export interface ProjectItem {
   id: number;
@@ -52,7 +52,7 @@ export function WorksSection() {
       description: "Full ERP desktop application built for a mobile phone sales, inventory, and repair service shop.",
       fullDescription: "A comprehensive enterprise desktop ERP system designed to streamline mobile store operations. Includes real-time inventory management, repair job tracking cards, point of sale (POS) billing, daily financial summaries, and customer repair status notifications.",
       image: "/assets/img/work-img-4.png",
-      url: "https://github.com/induwara-dissanayake",
+      url: "/demos/thilina-mobiles-erp",
       githubUrl: "https://github.com/induwara-dissanayake",
       technologies: ["TypeScript", "Electron.js", "Node.js", "SQLite/SQL", "Tailwind CSS"],
     },
@@ -64,7 +64,7 @@ export function WorksSection() {
       description: "Private bookshop management software for weekly book rentals, return reminders, and fee calculations.",
       fullDescription: "Desktop management application built for a private bookshop offering weekly rental memberships. Features member subscription records, automated weekly return date tracking, late fee calculations, book inventory indexing, and revenue analytics.",
       image: "/assets/img/work-img-3.png",
-      url: "https://github.com/induwara-dissanayake",
+      url: "/demos/bookshop-manager",
       githubUrl: "https://github.com/induwara-dissanayake",
       technologies: ["Desktop Framework", "TypeScript", "SQLite", "Node.js"],
     },
@@ -118,7 +118,7 @@ export function WorksSection() {
           })}
         </div>
 
-        {/* Projects Grid with Motion Layout */}
+        {/* Projects Grid */}
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence>
             {filteredProjects.map((project) => (
@@ -152,6 +152,12 @@ export function WorksSection() {
                     <span className="absolute top-3 left-3 bg-[hsl(var(--hue),12%,8%)]/90 backdrop-blur-md text-[hsl(var(--hue),75%,60%)] font-bold font-syne px-3 py-1 text-sm rounded-md border border-[hsl(var(--hue),8%,20%)]">
                       {project.number}
                     </span>
+
+                    {project.category === "Desktop app" && (
+                      <span className="absolute top-3 right-3 bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] font-bold text-[10px] uppercase px-2.5 py-1 rounded-full flex items-center gap-1 shadow-md">
+                        <Monitor className="w-3 h-3" /> Live Web Demo
+                      </span>
+                    )}
                   </div>
 
                   {/* Title & Description */}
@@ -169,7 +175,7 @@ export function WorksSection() {
                   </p>
                 </div>
 
-                {/* Tech Chips & Explore Button opening URL in new tab */}
+                {/* Tech Chips & Explore Button */}
                 <div>
                   <div className="flex flex-wrap gap-2 mb-5">
                     {project.technologies.slice(0, 3).map((tech) => (
@@ -188,7 +194,8 @@ export function WorksSection() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-sm font-bold text-[hsl(var(--hue),75%,60%)] hover:underline group-hover:translate-x-1 transition-transform"
                   >
-                    Explore Project <ArrowUpRight className="w-4 h-4" />
+                    {project.category === "Desktop app" ? "Launch Interactive Web Demo" : "Explore Project"}{" "}
+                    <ArrowUpRight className="w-4 h-4" />
                   </a>
                 </div>
               </motion.div>
@@ -215,16 +222,7 @@ export function WorksSection() {
                   <X className="w-6 h-6" />
                 </button>
 
-                {/* Modal Content */}
-                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-6 bg-[hsl(var(--hue),12%,8%)] border border-[hsl(var(--hue),8%,20%)]">
-                  <Image
-                    src={selectedProject.image}
-                    alt={selectedProject.title}
-                    fill
-                    className="object-cover object-top"
-                  />
-                </div>
-
+                {/* Modal Header Badge & Title */}
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-xs font-bold px-3 py-1 rounded-full bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] font-syne uppercase tracking-wider">
                     {selectedProject.category}
@@ -242,10 +240,20 @@ export function WorksSection() {
                   {selectedProject.fullDescription}
                 </p>
 
+                {/* Image Preview */}
+                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-6 bg-[hsl(var(--hue),12%,8%)] border border-[hsl(var(--hue),8%,20%)]">
+                  <Image
+                    src={selectedProject.image}
+                    alt={selectedProject.title}
+                    fill
+                    className="object-cover object-top"
+                  />
+                </div>
+
                 {/* Tech Badges */}
                 <div className="mb-8">
                   <h4 className="text-sm font-semibold text-[hsl(var(--hue),24%,98%)] mb-3">
-                    Technologies &amp; Tools Used:
+                    Technologies &amp; Architecture Used:
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedProject.technologies.map((tech) => (
@@ -265,9 +273,10 @@ export function WorksSection() {
                     href={selectedProject.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-bianca text-sm py-3 px-6 rounded-full flex items-center gap-2"
+                    className="btn-bianca text-sm py-3 px-6 rounded-full flex items-center gap-2 font-bold"
                   >
-                    Open Live Demo / Link <ExternalLink className="w-4 h-4" />
+                    {selectedProject.category === "Desktop app" ? "Launch Interactive Web Demo" : "Open Live Demo / Link"}{" "}
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                   {selectedProject.githubUrl && (
                     <a
@@ -276,7 +285,7 @@ export function WorksSection() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),24%,98%)] border border-[hsl(var(--hue),8%,20%)] hover:border-[hsl(var(--hue),75%,60%)] transition-colors text-sm font-semibold"
                     >
-                      Source Code <Github className="w-4 h-4" />
+                      View Source Code on GitHub <Github className="w-4 h-4" />
                     </a>
                   )}
                 </div>

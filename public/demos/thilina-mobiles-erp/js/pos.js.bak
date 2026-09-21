@@ -1,0 +1,4665 @@
+// POS System JavaScript
+let cart = [];
+let currentPaymentMethod = "cash";
+let currentCustomer = null;
+let lastInvoiceNumber = 1000;
+
+// Base64 placeholder images to avoid network issues
+const placeholderImages = {
+  smartphone:
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzAwN2JmZiIvPjx0ZXh0IHg9Ijc1IiB5PSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U21hcnRwaG9uZTwvdGV4dD48L3N2Zz4=",
+  accessory:
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2ZmOGQyOCIvPjx0ZXh0IHg9Ijc1IiB5PSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QWNjZXNzb3J5PC90ZXh0Pjwvc3ZnPg==",
+  case: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzQyYzQ0MiIvPjx0ZXh0IHg9Ijc1IiB5PSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2FzZTwvdGV4dD48L3N2Zz4=",
+  charger:
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzhiNWNmNiIvPjx0ZXh0IHg9Ijc1IiB5PSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2hhcmdlcjwvdGV4dD48L3N2Zz4=",
+  noimage:
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iI2Y1ZjVmNSIvPjx0ZXh0IHg9Ijc1IiB5PSI4MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ObyBJbWFnZTwvdGV4dD48L3N2Zz4=",
+};
+
+// Mock product data for POS
+const posProducts = [
+  // Smartphones
+  {
+    id: 1,
+    name: "iPhone 15 Pro",
+    sku: "IPH15PRO128",
+    category: "Smartphones",
+    brand: "Apple",
+    price: 135000,
+    stock: 15,
+    image: placeholderImages.smartphone,
+    barcode: "1234567890123",
+  },
+  {
+    id: 2,
+    name: "Samsung Galaxy S24",
+    sku: "SGS24128",
+    category: "Smartphones",
+    brand: "Samsung",
+    price: 110000,
+    stock: 8,
+    image: placeholderImages.smartphone,
+    barcode: "2345678901234",
+  },
+  {
+    id: 3,
+    name: "Xiaomi Redmi Note 13",
+    sku: "XMN13128",
+    category: "Smartphones",
+    brand: "Xiaomi",
+    price: 65000,
+    stock: 20,
+    image: placeholderImages.smartphone,
+    barcode: "5678901234567",
+  },
+  {
+    id: 4,
+    name: "Huawei P60 Pro",
+    sku: "HWP60PRO",
+    category: "Smartphones",
+    brand: "Huawei",
+    price: 95000,
+    stock: 6,
+    image: placeholderImages.smartphone,
+    barcode: "8901234567890",
+  },
+  {
+    id: 5,
+    name: "OnePlus 12",
+    sku: "OP12256",
+    category: "Smartphones",
+    brand: "OnePlus",
+    price: 89000,
+    stock: 12,
+    image: placeholderImages.smartphone,
+    barcode: "1122334455667",
+  },
+
+  // Accessories
+  {
+    id: 6,
+    name: "AirPods Pro 2",
+    sku: "APPRO2",
+    category: "Accessories",
+    brand: "Apple",
+    price: 42000,
+    stock: 10,
+    image: placeholderImages.accessory,
+    barcode: "9012345678901",
+  },
+  {
+    id: 7,
+    name: "Samsung Buds Pro",
+    sku: "SGBPRO",
+    category: "Accessories",
+    brand: "Samsung",
+    price: 18000,
+    stock: 0,
+    image: placeholderImages.accessory,
+    barcode: "4567890123456",
+  },
+  {
+    id: 8,
+    name: "Power Bank 10000mAh",
+    sku: "PWB10K",
+    category: "Accessories",
+    brand: "Xiaomi",
+    price: 4500,
+    stock: 30,
+    image: placeholderImages.accessory,
+    barcode: "0123456789012",
+  },
+  {
+    id: 9,
+    name: "Bluetooth Speaker",
+    sku: "BTSPK",
+    category: "Accessories",
+    brand: "JBL",
+    price: 12500,
+    stock: 18,
+    image: placeholderImages.accessory,
+    barcode: "2233445566778",
+  },
+  {
+    id: 10,
+    name: "Smartwatch Series 9",
+    sku: "AWSERIES9",
+    category: "Accessories",
+    brand: "Apple",
+    price: 58000,
+    stock: 7,
+    image: placeholderImages.accessory,
+    barcode: "3344556677889",
+  },
+
+  // Cases & Covers
+  {
+    id: 11,
+    name: "iPhone Clear Case",
+    sku: "IPHCASECLR",
+    category: "Cases & Covers",
+    brand: "Apple",
+    price: 3500,
+    stock: 45,
+    image: placeholderImages.case,
+    barcode: "6789012345678",
+  },
+  {
+    id: 12,
+    name: "Samsung Leather Case",
+    sku: "SGCASELTHR",
+    category: "Cases & Covers",
+    brand: "Samsung",
+    price: 2800,
+    stock: 32,
+    image: placeholderImages.case,
+    barcode: "7890123456789",
+  },
+  {
+    id: 13,
+    name: "Universal Flip Cover",
+    sku: "UNIVFLIP",
+    category: "Cases & Covers",
+    brand: "Generic",
+    price: 1200,
+    stock: 60,
+    image: placeholderImages.case,
+    barcode: "8901234567890",
+  },
+  {
+    id: 14,
+    name: "Tempered Glass Screen Protector",
+    sku: "TMPGLASS",
+    category: "Cases & Covers",
+    brand: "Generic",
+    price: 800,
+    stock: 85,
+    image: placeholderImages.case,
+    barcode: "9012345678901",
+  },
+
+  // Chargers
+  {
+    id: 15,
+    name: "iPhone USB-C Cable",
+    sku: "IPHCBL",
+    category: "Chargers",
+    brand: "Apple",
+    price: 3500,
+    stock: 25,
+    image: placeholderImages.charger,
+    barcode: "3456789012345",
+  },
+  {
+    id: 16,
+    name: "Wireless Charger Pad",
+    sku: "WRLSCHG",
+    category: "Chargers",
+    brand: "Samsung",
+    price: 8500,
+    stock: 15,
+    image: placeholderImages.charger,
+    barcode: "7890123456789",
+  },
+  {
+    id: 17,
+    name: "Fast Charger 65W",
+    sku: "FASTCHG65",
+    category: "Chargers",
+    brand: "Xiaomi",
+    price: 5200,
+    stock: 22,
+    image: placeholderImages.charger,
+    barcode: "4455667788990",
+  },
+  {
+    id: 18,
+    name: "Car Charger Dual USB",
+    sku: "CARCHG2USB",
+    category: "Chargers",
+    brand: "Generic",
+    price: 1800,
+    stock: 35,
+    image: placeholderImages.charger,
+    barcode: "5566778899001",
+  },
+  {
+    id: 19,
+    name: "MagSafe Charger",
+    sku: "MAGSAFE",
+    category: "Chargers",
+    brand: "Apple",
+    price: 7500,
+    stock: 12,
+    image: placeholderImages.charger,
+    barcode: "6677889900112",
+  },
+  {
+    id: 20,
+    name: "Multi-Port USB Hub",
+    sku: "USBHUB4PORT",
+    category: "Chargers",
+    brand: "Generic",
+    price: 3200,
+    stock: 28,
+    image: placeholderImages.charger,
+    barcode: "7788990011223",
+  },
+];
+
+// Mock customer data - Enhanced with more realistic Sri Lankan data
+const customers = [
+  {
+    id: 1,
+    name: "Nimal Fernando",
+    phone: "077 123 4567",
+    email: "nimal.fernando@gmail.com",
+  },
+  {
+    id: 2,
+    name: "Saman Perera",
+    phone: "071 987 6543",
+    email: "saman.perera@yahoo.com",
+  },
+  {
+    id: 3,
+    name: "Kamala Silva",
+    phone: "070 456 7890",
+    email: "kamala.silva@hotmail.com",
+  },
+  {
+    id: 4,
+    name: "Ruwan Jayasekara",
+    phone: "076 234 5678",
+    email: "ruwan.j@gmail.com",
+  },
+  {
+    id: 5,
+    name: "Priya Wickramasinghe",
+    phone: "077 345 6789",
+    email: "priya.w@outlook.com",
+  },
+  {
+    id: 6,
+    name: "Kasun Rajapakse",
+    phone: "078 456 7890",
+    email: "kasun.raja@gmail.com",
+  },
+  {
+    id: 7,
+    name: "Dilani Munasinghe",
+    phone: "071 567 8901",
+    email: "dilani.m@yahoo.com",
+  },
+  {
+    id: 8,
+    name: "Chaminda Kumara",
+    phone: "070 678 9012",
+    email: "chaminda.k@gmail.com",
+  },
+  {
+    id: 9,
+    name: "Sanduni Liyanage",
+    phone: "076 789 0123",
+    email: "sanduni.l@hotmail.com",
+  },
+  {
+    id: 10,
+    name: "Tharindu Bandara",
+    phone: "077 890 1234",
+    email: "tharindu.b@gmail.com",
+  },
+  {
+    id: 11,
+    name: "Anushka Dissanayake",
+    phone: "078 901 2345",
+    email: "anushka.d@yahoo.com",
+  },
+  {
+    id: 12,
+    name: "Mahesh Gunasekara",
+    phone: "071 012 3456",
+    email: "mahesh.g@outlook.com",
+  },
+  {
+    id: 13,
+    name: "Nethmi Rathnayake",
+    phone: "070 123 4567",
+    email: "nethmi.r@gmail.com",
+  },
+  {
+    id: 14,
+    name: "Janaka Wijesinghe",
+    phone: "076 234 5678",
+    email: "janaka.w@hotmail.com",
+  },
+  {
+    id: 15,
+    name: "Ishara Mendis",
+    phone: "077 345 6789",
+    email: "ishara.m@yahoo.com",
+  },
+];
+
+// Initialize POS System
+function initializePOS() {
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+  loadProducts(); // Load products by default
+  setupEventListeners();
+  updateCartDisplay();
+  setupRoleBasedUI();
+} // Setup UI elements based on user role
+function setupRoleBasedUI() {
+  const userInfo = sessionStorage.getItem("user");
+
+  try {
+    const user = JSON.parse(userInfo);
+    const role = user.role ? user.role.toLowerCase() : "";
+
+    // Hide dashboard button for cashiers to keep them focused on POS
+    const dashboardButton = document.querySelector(
+      'button[onclick="goToDashboard()"]'
+    );
+    if (role === "cashier" && dashboardButton) {
+      dashboardButton.style.display = "none";
+    }
+
+    // Cashiers can add customers but maybe limit other functions in future
+    // This can be expanded based on business requirements
+  } catch (e) {
+    console.warn("Could not parse user info for role-based UI setup");
+  }
+}
+
+// Update date and time
+function updateDateTime() {
+  const now = new Date();
+  document.getElementById("current-date").textContent = now.toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+  document.getElementById("current-time").textContent = now.toLocaleTimeString(
+    "en-US",
+    {
+      hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
+}
+
+// Setup event listeners
+function setupEventListeners() {
+  // Product search
+  document
+    .getElementById("product-search")
+    .addEventListener("input", filterProducts);
+
+  // Category and brand filters
+  document
+    .getElementById("category-filter")
+    .addEventListener("change", filterProducts);
+  document
+    .getElementById("brand-filter")
+    .addEventListener("change", filterProducts);
+
+  // Barcode scanning (Enter key in search)
+  document
+    .getElementById("product-search")
+    .addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        const searchTerm = this.value.trim();
+        if (searchTerm) {
+          addProductByBarcode(searchTerm);
+          this.value = "";
+        }
+      }
+    });
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", handleKeyboardShortcuts);
+
+  // Auto-focus search on page load
+  document.getElementById("product-search").focus();
+}
+
+// Handle keyboard shortcuts
+function handleKeyboardShortcuts(e) {
+  // Prevent shortcuts when typing in input fields
+  if (
+    e.target.tagName === "INPUT" ||
+    e.target.tagName === "TEXTAREA" ||
+    e.target.tagName === "SELECT"
+  ) {
+    return;
+  }
+
+  switch (e.key) {
+    case "F1":
+      e.preventDefault();
+      document.getElementById("product-search").focus();
+      break;
+    case "F2":
+      e.preventDefault();
+      if (cart.length > 0) {
+        processPayment();
+      }
+      break;
+    case "F3":
+      e.preventDefault();
+      clearCart();
+      break;
+    case "F4":
+      e.preventDefault();
+      if (cart.length > 0) {
+        holdSale();
+      }
+      break;
+    case "Escape":
+      e.preventDefault();
+      // Close any open modals
+      document.getElementById("add-customer-modal").classList.add("hidden");
+      document.getElementById("payment-success-modal").classList.add("hidden");
+      document.getElementById("shortcuts-modal").classList.add("hidden");
+      break;
+  }
+}
+
+// Global variables for current view
+let currentPOSTab = "shop"; // 'shop', 'repair', 'customer', or 'return'
+
+// Mock customer data with purchase history
+const customerData = customers.map((c, idx) => ({
+  ...c,
+  totalPurchases: Math.floor(Math.random() * 50000) + 10000,
+  lastPurchase: new Date(
+    2024,
+    Math.floor(Math.random() * 12),
+    Math.floor(Math.random() * 28) + 1
+  ).toLocaleDateString(),
+  purchaseCount: Math.floor(Math.random() * 20) + 1,
+}));
+
+// Mock customer purchases data
+const customerPurchasesData = [
+  {
+    id: 1,
+    customerId: 1,
+    purchaseDate: "2024-11-10",
+    items: [
+      {
+        productId: 1,
+        productName: "iPhone 15 Pro",
+        quantity: 1,
+        price: 135000,
+      },
+      {
+        productId: 3,
+        productName: "iPhone Charger Cable",
+        quantity: 2,
+        price: 3500,
+      },
+    ],
+    totalAmount: 142000,
+    paymentMethod: "Card",
+    invoiceNo: "INV-2024-1156",
+  },
+  {
+    id: 2,
+    customerId: 2,
+    purchaseDate: "2024-10-15",
+    items: [
+      {
+        productId: 2,
+        productName: "Samsung Galaxy S24",
+        quantity: 1,
+        price: 110000,
+      },
+    ],
+    totalAmount: 110000,
+    paymentMethod: "Cash",
+    invoiceNo: "INV-2024-1089",
+  },
+  {
+    id: 3,
+    customerId: 1,
+    purchaseDate: "2024-09-20",
+    items: [
+      {
+        productId: 15,
+        productName: "AirPods Pro",
+        quantity: 1,
+        price: 35000,
+      },
+    ],
+    totalAmount: 35000,
+    paymentMethod: "Card",
+    invoiceNo: "INV-2024-0945",
+  },
+  {
+    id: 4,
+    customerId: 3,
+    purchaseDate: "2024-11-22",
+    items: [
+      {
+        productId: 5,
+        productName: "iPhone 14",
+        quantity: 1,
+        price: 95000,
+      },
+      {
+        productId: 10,
+        productName: "Phone Case",
+        quantity: 1,
+        price: 2500,
+      },
+    ],
+    totalAmount: 97500,
+    paymentMethod: "Cash",
+    invoiceNo: "INV-2024-1203",
+  },
+];
+
+// Mock customer repairs data
+const customerRepairsData = [
+  {
+    id: 1,
+    customerId: 1,
+    repairDate: "2024-10-20",
+    deviceBrand: "Samsung",
+    deviceModel: "Galaxy S23",
+    issue: "Cracked screen replacement",
+    repairCost: 15000,
+    status: "Completed",
+    completedDate: "2024-10-22",
+    repairJobNo: "REP-2024-0234",
+  },
+  {
+    id: 2,
+    customerId: 1,
+    repairDate: "2024-08-15",
+    deviceBrand: "iPhone",
+    deviceModel: "iPhone 14",
+    issue: "Battery replacement",
+    repairCost: 8000,
+    status: "Completed",
+    completedDate: "2024-08-16",
+    repairJobNo: "REP-2024-0156",
+  },
+  {
+    id: 3,
+    customerId: 2,
+    repairDate: "2024-11-01",
+    deviceBrand: "Xiaomi",
+    deviceModel: "Redmi Note 13",
+    issue: "Charging port replacement",
+    repairCost: 4500,
+    status: "Completed",
+    completedDate: "2024-11-02",
+    repairJobNo: "REP-2024-0289",
+  },
+  {
+    id: 4,
+    customerId: 3,
+    repairDate: "2024-09-12",
+    deviceBrand: "Samsung",
+    deviceModel: "Galaxy A54",
+    issue: "Water damage repair",
+    repairCost: 12000,
+    status: "Completed",
+    completedDate: "2024-09-15",
+    repairJobNo: "REP-2024-0201",
+  },
+];
+
+// Mock return data
+const returnData = [
+  {
+    id: "RET-001",
+    invoiceNumber: "INV-2024-00123",
+    customer: "Nimal Fernando",
+    product: "iPhone 15 Pro",
+    reason: "Defective",
+    amount: 135000,
+    status: "Pending",
+    date: "2024-01-20",
+    notes: "Screen has dead pixels",
+  },
+  {
+    id: "RET-002",
+    invoiceNumber: "INV-2024-00098",
+    customer: "Saman Perera",
+    product: "Samsung Galaxy Buds Pro",
+    reason: "Changed Mind",
+    amount: 18000,
+    status: "Approved",
+    date: "2024-01-18",
+    notes: "Within 7-day return period",
+  },
+  {
+    id: "RET-003",
+    invoiceNumber: "INV-2024-00156",
+    customer: "Kamala Silva",
+    product: "Power Bank 10000mAh",
+    reason: "Wrong Item",
+    amount: 4500,
+    status: "Completed",
+    date: "2024-01-15",
+    notes: "Refunded successfully",
+  },
+];
+
+// Switch POS Tab Function
+function switchPOSTab(tab) {
+  currentPOSTab = tab;
+
+  // Hide all views
+  document.getElementById("products-view")?.classList.add("hidden");
+  document.getElementById("repairs-view")?.classList.add("hidden");
+  document.getElementById("customer-view")?.classList.add("hidden");
+  document.getElementById("return-view")?.classList.add("hidden");
+
+  // Remove active class from all tabs
+  document.querySelectorAll(".pos-tab").forEach((btn) => {
+    btn.classList.remove("active", "border-blue-500", "text-blue-600");
+    btn.classList.add("border-transparent", "text-gray-500");
+  });
+
+  // Activate selected tab
+  const activeTab = document.getElementById(`tab-${tab}`);
+  if (activeTab) {
+    activeTab.classList.add("active", "border-blue-500", "text-blue-600");
+    activeTab.classList.remove("border-transparent", "text-gray-500");
+  }
+
+  // Show appropriate content and update UI
+  switch (tab) {
+    case "shop":
+      document.getElementById("products-view")?.classList.remove("hidden");
+      document.getElementById("section-title").textContent = "Shop";
+      document
+        .getElementById("search-filters-section")
+        ?.classList.remove("hidden");
+      document.getElementById("cart-area")?.classList.remove("hidden");
+      loadProducts();
+      clearCartForTabSwitch();
+      updateUIForShopMode();
+      break;
+
+    case "repair":
+      document.getElementById("repairs-view")?.classList.remove("hidden");
+      document.getElementById("section-title").textContent = "Repair Orders";
+      document
+        .getElementById("search-filters-section")
+        ?.classList.add("hidden");
+      document.getElementById("cart-area")?.classList.remove("hidden");
+      loadPOSRepairs();
+      clearCartForTabSwitch();
+      updateUIForRepairMode();
+      break;
+
+    case "customer":
+      document.getElementById("customer-view")?.classList.remove("hidden");
+      document.getElementById("section-title").textContent = "Customers";
+      document
+        .getElementById("search-filters-section")
+        ?.classList.add("hidden");
+      document.getElementById("cart-area")?.classList.add("hidden");
+      loadCustomerTable();
+      clearCartForTabSwitch();
+      updateUIForCustomerMode();
+      break;
+
+    case "return":
+      document.getElementById("return-view")?.classList.remove("hidden");
+      document.getElementById("section-title").textContent = "Returns";
+      document
+        .getElementById("search-filters-section")
+        ?.classList.add("hidden");
+      document.getElementById("cart-area")?.classList.add("hidden");
+      loadReturnTable();
+      clearCartForTabSwitch();
+      updateUIForReturnMode();
+      break;
+  }
+
+  // Re-initialize feather icons
+  feather.replace();
+}
+
+// Load and display products in table format
+function loadProducts(productsToShow = posProducts) {
+  const tbody = document.getElementById("product-table-body");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  productsToShow.forEach((product) => {
+    const row = createProductRow(product);
+    tbody.appendChild(row);
+  });
+
+  // Initialize feather icons for action buttons
+  feather.replace();
+}
+
+// Create product row element
+function createProductRow(product) {
+  const row = document.createElement("tr");
+  row.className = "hover:bg-gray-50 cursor-pointer";
+
+  const stockStatus =
+    product.stock > 10
+      ? "in-stock"
+      : product.stock > 0
+      ? "low-stock"
+      : "out-of-stock";
+  const stockText =
+    product.stock > 10
+      ? "In Stock"
+      : product.stock > 0
+      ? "Low Stock"
+      : "Out of Stock";
+  const stockClass =
+    stockStatus === "in-stock"
+      ? "bg-green-100 text-green-800"
+      : stockStatus === "low-stock"
+      ? "bg-yellow-100 text-yellow-800"
+      : "bg-red-100 text-red-800";
+
+  row.innerHTML = `
+        <td class="px-3 py-2 text-sm text-gray-900">${product.name}</td>
+        <td class="px-3 py-2 text-sm text-gray-600">${product.category}</td>
+        <td class="px-3 py-2 text-sm text-gray-600">${product.brand}</td>
+        <td class="px-3 py-2 text-sm font-medium text-blue-600">Rs.${product.price.toLocaleString()}</td>
+        <td class="px-3 py-2">
+            <span class="px-2 py-1 text-xs font-semibold rounded-full ${stockClass}">${stockText} (${
+    product.stock
+  })</span>
+        </td>
+        <td class="px-3 py-2" onclick="event.stopPropagation()">
+            <button onclick="viewProductDetails(${
+              product.id
+            })" class="text-blue-600 hover:text-blue-900 p-1 rounded" title="View Details">
+                <i data-feather="eye" class="w-4 h-4"></i>
+            </button>
+        </td>
+    `;
+
+  // Add click handler to row for adding to cart
+  row.onclick = () => addProductToCart(product);
+
+  return row;
+}
+
+// Load and display repair orders in POS
+function loadPOSRepairs(repairsToShow = null) {
+  const repairsData = [
+    {
+      id: "RP-2024-001",
+      device: "iPhone 13 Pro",
+      imei: "123456789012345",
+      customer: "Nimal Fernando",
+      customerId: null,
+      phone: "+94 77 123 4567",
+      email: null,
+      issue: "Screen Replacement",
+      status: "repairing",
+      estimatedCost: 25000,
+      actualCost: 0,
+      receivedDate: "2024-11-14",
+      completedDate: null,
+      technician: "Kasun Silva",
+      notes: "Customer dropped phone, screen cracked badly",
+      items: [{ name: "iPhone 13 Pro Display", cost: 22000, price: 25000 }],
+    },
+    {
+      id: "RP-2024-002",
+      device: "Samsung Galaxy S23",
+      imei: "987654321098765",
+      customer: "Saman Perera",
+      customerId: null,
+      phone: "+94 71 987 6543",
+      email: null,
+      issue: "Battery Replacement",
+      status: "completed",
+      estimatedCost: 15000,
+      actualCost: 14500,
+      receivedDate: "2024-11-13",
+      completedDate: "2024-11-15",
+      technician: "Nuwan Kumara",
+      notes: "Battery swelling issue, replaced with original part",
+      items: [
+        { name: "Samsung Galaxy S23 Battery", cost: 12000, price: 14500 },
+      ],
+    },
+    {
+      id: "RP-2024-003",
+      device: "iPhone 12",
+      imei: "456789012345678",
+      customer: "Kamala Silva",
+      customerId: null,
+      phone: "+94 70 456 7890",
+      email: null,
+      issue: "Water Damage",
+      status: "diagnosing",
+      estimatedCost: 35000,
+      actualCost: 0,
+      receivedDate: "2024-11-15",
+      completedDate: null,
+      technician: "Pradeep Ranasinghe",
+      notes: "Phone dropped in water, multiple components affected",
+      items: [],
+    },
+    {
+      id: "RP-2024-004",
+      device: "Huawei P30",
+      imei: "789012345678901",
+      customer: "Ruwan Jayasekara",
+      customerId: null,
+      phone: "+94 76 234 5678",
+      email: null,
+      issue: "Charging Port Repair",
+      status: "pending_parts",
+      estimatedCost: 8000,
+      actualCost: 0,
+      receivedDate: "2024-11-12",
+      completedDate: null,
+      technician: "Kasun Silva",
+      notes: "Waiting for charging port component delivery",
+      items: [],
+    },
+  ];
+
+  const dataToShow = repairsToShow || repairsData;
+  const tbody = document.getElementById("repair-orders-tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  const statusColors = {
+    received: "bg-blue-100 text-blue-800",
+    diagnosing: "bg-yellow-100 text-yellow-800",
+    repairing: "bg-orange-100 text-orange-800",
+    testing: "bg-purple-100 text-purple-800",
+    completed: "bg-green-100 text-green-800",
+    delivered: "bg-gray-100 text-gray-800",
+    pending_parts: "bg-red-100 text-red-800",
+  };
+
+  const statusLabels = {
+    received: "Received",
+    diagnosing: "Diagnosing",
+    repairing: "Repairing",
+    testing: "Testing",
+    completed: "Completed",
+    delivered: "Delivered",
+    pending_parts: "Pending Parts",
+  };
+
+  dataToShow.forEach((repair) => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-gray-50 cursor-pointer";
+
+    const statusClass =
+      statusColors[repair.status] || "bg-gray-100 text-gray-800";
+    const statusLabel = statusLabels[repair.status] || repair.status;
+
+    row.innerHTML = `
+            <td class="px-3 py-2 text-sm font-medium text-blue-600">${
+              repair.id
+            }</td>
+            <td class="px-3 py-2 text-sm text-gray-900">${repair.device}</td>
+            <td class="px-3 py-2 text-sm text-gray-700">${repair.customer}</td>
+            <td class="px-3 py-2 text-sm text-gray-600">${repair.issue}</td>
+            <td class="px-3 py-2">
+                <span class="px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">${statusLabel}</span>
+            </td>
+            <td class="px-3 py-2 text-sm text-gray-900">Rs.${repair.estimatedCost.toLocaleString()}</td>
+            <td class="px-3 py-2 text-sm font-medium">
+                <button onclick="event.stopPropagation(); viewPOSRepair('${
+                  repair.id
+                }')" class="text-blue-600 hover:text-blue-900 mr-3 p-1 rounded" title="View Details">
+                    <i data-feather="eye" class="w-4 h-4"></i>
+                </button>
+                <button onclick="event.stopPropagation(); editPOSRepair('${
+                  repair.id
+                }')" class="text-green-600 hover:text-green-900 mr-3 p-1 rounded" title="Edit Repair">
+                    <i data-feather="edit" class="w-4 h-4"></i>
+                </button>
+                <button onclick="event.stopPropagation(); openPOSRepairInvoice('${
+                  repair.id
+                }')" class="text-purple-600 hover:text-purple-900 p-1 rounded" title="Invoice">
+                    <i data-feather="printer" class="w-4 h-4"></i>
+                </button>
+            </td>
+        `;
+
+    // Add click handler to row for adding to cart
+    row.onclick = () => addRepairToCart(repair.id);
+
+    tbody.appendChild(row);
+  });
+
+  // Initialize feather icons for action buttons
+  feather.replace();
+
+  // Store repairs data globally for filtering
+  window.currentRepairsData = repairsData;
+}
+
+// Toggle between products and repairs view
+function toggleView() {
+  const productsView = document.getElementById("products-view");
+  const repairsView = document.getElementById("repairs-view");
+  const toggleBtn = document.getElementById("toggle-view-btn");
+  const toggleIcon = document.getElementById("toggle-icon");
+  const toggleText = document.getElementById("toggle-text");
+  const sectionTitle = document.getElementById("section-title");
+
+  if (currentView === "products") {
+    // Switch to repairs view
+    currentView = "repairs";
+    productsView.classList.add("hidden");
+    repairsView.classList.remove("hidden");
+    toggleIcon.setAttribute("data-feather", "shopping-bag");
+    toggleText.textContent = "Shop";
+    sectionTitle.textContent = "Repair Orders";
+    toggleBtn.classList.remove("bg-purple-500", "hover:bg-purple-600");
+    toggleBtn.classList.add("bg-green-500", "hover:bg-green-600");
+    loadPOSRepairs();
+
+    // Clear cart and update UI for repairs
+    clearCartForTabSwitch();
+    updateUIForRepairMode();
+  } else {
+    // Switch to products view
+    currentView = "products";
+    productsView.classList.remove("hidden");
+    repairsView.classList.add("hidden");
+    toggleIcon.setAttribute("data-feather", "tool");
+    toggleText.textContent = "Repairs";
+    sectionTitle.textContent = "Products";
+    toggleBtn.classList.remove("bg-green-500", "hover:bg-green-600");
+    toggleBtn.classList.add("bg-purple-500", "hover:bg-purple-600");
+    loadProducts();
+
+    // Clear cart and update UI for shop
+    clearCartForTabSwitch();
+    updateUIForShopMode();
+  }
+
+  // Re-initialize feather icons
+  feather.replace();
+}
+
+// Filter items (products or repairs based on current view)
+function filterItems() {
+  const searchTerm = document.getElementById("item-search").value.toLowerCase();
+
+  if (currentView === "products") {
+    filterProducts(searchTerm);
+  } else {
+    filterRepairsInline(searchTerm);
+  }
+}
+
+// Filter products
+function filterProducts(searchTerm) {
+  const filteredProducts = posProducts.filter(
+    (product) =>
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.category.toLowerCase().includes(searchTerm) ||
+      product.brand.toLowerCase().includes(searchTerm)
+  );
+  loadProducts(filteredProducts);
+}
+
+// Filter repairs inline
+function filterRepairsInline(searchTerm) {
+  const statusFilter =
+    document.getElementById("repair-status-filter")?.value || "";
+
+  if (!window.currentRepairsData) return;
+
+  const filteredRepairs = window.currentRepairsData.filter((repair) => {
+    const matchesSearch =
+      !searchTerm ||
+      repair.id.toLowerCase().includes(searchTerm) ||
+      repair.device.toLowerCase().includes(searchTerm) ||
+      repair.customer.toLowerCase().includes(searchTerm) ||
+      repair.issue.toLowerCase().includes(searchTerm);
+
+    const matchesStatus = !statusFilter || repair.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  loadPOSRepairs(filteredRepairs);
+}
+
+// Update UI for customer mode
+function updateUIForCustomerMode() {
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) cartHeader.textContent = "Customer Details";
+
+  updateEmptyCartMessage("customer");
+
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) discountRow.style.display = "none";
+
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="user-check" class="w-5 h-5 mr-2 inline"></i>Select Customer';
+    feather.replace();
+  }
+}
+
+// Update UI for return mode
+function updateUIForReturnMode() {
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) cartHeader.textContent = "Return Details";
+
+  updateEmptyCartMessage("return");
+
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) discountRow.style.display = "none";
+
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="rotate-ccw" class="w-5 h-5 mr-2 inline"></i>Process Return';
+    feather.replace();
+  }
+}
+
+// Update empty cart message based on mode
+function updateEmptyCartMessage(mode) {
+  const emptyCart = document.getElementById("empty-cart");
+  if (emptyCart && cart.length === 0) {
+    if (mode === "repair") {
+      emptyCart.innerHTML = `
+        <i data-feather="tool" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No repair selected</p>
+        <p class="text-sm">Select a repair order to create invoice</p>
+      `;
+    } else if (mode === "customer") {
+      emptyCart.innerHTML = `
+        <i data-feather="users" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No customer selected</p>
+        <p class="text-sm">Select a customer to view details</p>
+      `;
+    } else if (mode === "return") {
+      emptyCart.innerHTML = `
+        <i data-feather="rotate-ccw" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No return selected</p>
+        <p class="text-sm">Select a return to process</p>
+      `;
+    } else {
+      emptyCart.innerHTML = `
+        <i data-feather="shopping-cart" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>Your cart is empty</p>
+        <p class="text-sm">Add products to get started</p>
+      `;
+    }
+    feather.replace();
+  }
+}
+
+// Create product card element
+function createProductCard(product) {
+  const card = document.createElement("div");
+  card.className =
+    "pos-product-card bg-white border border-gray-200 rounded-lg p-3 shadow-sm";
+
+  const stockStatus =
+    product.stock > 10
+      ? "in-stock"
+      : product.stock > 0
+      ? "low-stock"
+      : "out-of-stock";
+  const stockText =
+    product.stock > 10
+      ? "In Stock"
+      : product.stock > 0
+      ? "Low Stock"
+      : "Out of Stock";
+
+  if (product.stock === 0) {
+    card.classList.add("out-of-stock");
+  } else {
+    card.onclick = () => addToCart(product);
+  }
+
+  card.innerHTML = `
+        <div class="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden relative">
+            <img src="${product.image}" alt="${product.name}" 
+                 class="w-full h-full object-cover" 
+                 onerror="this.src='${placeholderImages.noimage}'">
+            ${
+              product.stock === 0
+                ? '<div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"><span class="text-white text-sm font-medium">Out of Stock</span></div>'
+                : ""
+            }
+        </div>
+        <div class="space-y-2">
+            <h3 class="font-medium text-sm text-gray-800 leading-tight">${
+              product.name
+            }</h3>
+            <p class="text-xs text-gray-500">${product.sku}</p>
+            <div class="flex justify-between items-center">
+                <span class="text-base font-bold text-blue-600">Rs.${product.price.toLocaleString()}</span>
+                <span class="stock-indicator ${stockStatus}">${stockText}</span>
+            </div>
+            <div class="text-xs text-gray-500 text-center">
+                ${product.stock} units available
+            </div>
+        </div>
+    `;
+
+  return card;
+}
+
+// Filter products
+function filterProducts() {
+  const searchTerm = document
+    .getElementById("product-search")
+    .value.toLowerCase();
+  const categoryFilter = document.getElementById("category-filter").value;
+  const brandFilter = document.getElementById("brand-filter").value;
+
+  const filteredProducts = posProducts.filter((product) => {
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchTerm) ||
+      product.sku.toLowerCase().includes(searchTerm) ||
+      product.barcode.includes(searchTerm);
+    const matchesCategory =
+      !categoryFilter || product.category === categoryFilter;
+    const matchesBrand = !brandFilter || product.brand === brandFilter;
+
+    return matchesSearch && matchesCategory && matchesBrand;
+  });
+
+  loadProducts(filteredProducts);
+}
+
+// Clear filters
+function clearFilters() {
+  document.getElementById("product-search").value = "";
+  document.getElementById("category-filter").value = "";
+  document.getElementById("brand-filter").value = "";
+  loadProducts();
+}
+
+// Add product by barcode
+function addProductByBarcode(barcode) {
+  const product = posProducts.find(
+    (p) =>
+      p.barcode === barcode || p.sku.toLowerCase() === barcode.toLowerCase()
+  );
+  if (product) {
+    addToCart(product);
+    showNotification(`${product.name} added to cart`, "success");
+  } else {
+    showNotification("Product not found", "error");
+  }
+}
+
+// Add product to cart
+function addToCart(product) {
+  if (product.stock <= 0) {
+    showNotification("Product is out of stock", "error");
+    return;
+  }
+
+  const existingItem = cart.find((item) => item.id === product.id);
+
+  if (existingItem) {
+    if (existingItem.quantity < product.stock) {
+      existingItem.quantity++;
+      existingItem.total = existingItem.quantity * existingItem.price;
+      existingItem.totalPrice = existingItem.total;
+    } else {
+      showNotification("Not enough stock available", "error");
+      return;
+    }
+  } else {
+    cart.push({
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      quantity: 1,
+      total: product.price,
+      totalPrice: product.price,
+      stock: product.stock,
+    });
+  }
+
+  updateCartDisplay();
+  showNotification(`${product.name} added to cart`, "success");
+}
+
+// Remove item from cart
+function removeFromCart(productId) {
+  // normalize id types: if productId is numeric string, convert to number
+  const normalizedId =
+    typeof productId === "string" && /^\d+$/.test(productId)
+      ? Number(productId)
+      : productId;
+
+  console.debug(
+    "removeFromCart: before",
+    cart.map((i) => i.id)
+  );
+  cart = cart.filter((item) => item.id !== normalizedId);
+  console.debug(
+    "removeFromCart: after",
+    cart.map((i) => i.id)
+  );
+  updateCartDisplay();
+}
+
+// Update item quantity
+function updateQuantity(productId, newQuantity) {
+  // normalize incoming id (DOM calls often pass numeric ids as strings)
+  const normalizedId =
+    typeof productId === "string" && /^\d+$/.test(productId)
+      ? Number(productId)
+      : productId;
+
+  const item = cart.find((item) => item.id === normalizedId);
+  if (item) {
+    if (newQuantity <= 0) {
+      removeFromCart(productId);
+    } else if (newQuantity <= item.stock) {
+      item.quantity = newQuantity;
+      item.total = item.quantity * item.price;
+      item.totalPrice = item.total;
+      console.debug("updateQuantity:", {
+        id: normalizedId,
+        quantity: item.quantity,
+        total: item.total,
+      });
+      updateCartDisplay();
+    } else {
+      showNotification("Not enough stock available", "error");
+    }
+  }
+}
+
+// Update cart display
+function updateCartDisplay() {
+  const cartItemsContainer = document.getElementById("cart-items");
+  if (!cartItemsContainer) {
+    console.error("updateCartDisplay: #cart-items element not found");
+    return;
+  }
+
+  let emptyCart = document.getElementById("empty-cart");
+  if (!emptyCart) {
+    // create a fallback empty cart element so code can run without HTML present
+    emptyCart = document.createElement("div");
+    emptyCart.id = "empty-cart";
+    emptyCart.className = "p-4 text-center text-gray-500";
+    emptyCart.textContent = "No items in cart";
+  }
+
+  if (cart.length === 0) {
+    emptyCart.style.display = "block";
+    cartItemsContainer.innerHTML = "";
+    cartItemsContainer.appendChild(emptyCart);
+  } else {
+    // ensure emptyCart hidden when there are items
+    try {
+      emptyCart.style.display = "none";
+    } catch (e) {}
+
+    cartItemsContainer.innerHTML = "";
+
+    cart.forEach((item) => {
+      const cartItem = createCartItem(item);
+      cartItemsContainer.appendChild(cartItem);
+    });
+  }
+
+  updateTotals();
+}
+
+// Create cart item element
+function createCartItem(item) {
+  const cartItem = document.createElement("div");
+  cartItem.className =
+    "flex items-center justify-between p-3 border-b border-gray-100 last:border-b-0";
+
+  // Different display for repair items vs product items
+  if (item.type === "repair") {
+    cartItem.innerHTML = `
+        <div class="flex-1">
+            <h4 class="font-medium text-sm text-gray-800">${item.name}</h4>
+            <p class="text-xs text-blue-500">Repair ID: ${item.repairId}</p>
+            <p class="text-xs text-gray-500">Customer: ${item.customer}</p>
+            <p class="text-sm font-semibold text-purple-600">Rs.${item.price.toLocaleString()}</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="viewRepairInvoice('${item.repairId}')" 
+                    class="px-2 py-1 bg-blue-100 text-blue-600 rounded text-xs hover:bg-blue-200">Invoice</button>
+            <button onclick="removeFromCart('${item.id}')" 
+                    class="w-6 h-6 bg-red-100 text-red-600 rounded text-xs hover:bg-red-200">×</button>
+        </div>
+    `;
+  } else {
+    // Original product item display
+    cartItem.innerHTML = `
+        <div class="flex-1">
+            <h4 class="font-medium text-sm text-gray-800">${item.name}</h4>
+            <p class="text-xs text-gray-500">${item.sku || ""}</p>
+            <p class="text-sm font-semibold text-blue-600">Rs.${item.price.toLocaleString()}</p>
+        </div>
+        <div class="flex items-center space-x-2">
+            <button onclick="updateQuantity('${item.id}', ${
+      item.quantity - 1
+    })" 
+                    class="w-6 h-6 bg-gray-200 rounded text-xs hover:bg-gray-300">-</button>
+            <input type="number" value="${item.quantity}" min="1" max="${
+      item.stock || 99
+    }"
+                   onchange="updateQuantity('${item.id}', parseInt(this.value))"
+                   class="w-12 px-1 py-1 text-xs text-center border border-gray-300 rounded">
+            <button onclick="updateQuantity('${item.id}', ${
+      item.quantity + 1
+    })" 
+                    class="w-6 h-6 bg-gray-200 rounded text-xs hover:bg-gray-300">+</button>
+            <button onclick="removeFromCart('${item.id}')" 
+                    class="w-6 h-6 bg-red-100 text-red-600 rounded text-xs hover:bg-red-200 ml-2">×</button>
+        </div>
+    `;
+  }
+
+  return cartItem;
+}
+
+// Update totals
+function updateTotals() {
+  const subtotal = cart.reduce(
+    (sum, item) =>
+      sum + (item.totalPrice || item.total || item.price * item.quantity),
+    0
+  );
+
+  console.debug(
+    "updateTotals: subtotal=",
+    subtotal,
+    "cart=",
+    cart.map((i) => ({
+      id: i.id,
+      qty: i.quantity,
+      price: i.price,
+      total: i.total,
+      totalPrice: i.totalPrice,
+    }))
+  );
+
+  const discountInput = document.getElementById("discount-input");
+  const discountType = document.getElementById("discount-type");
+  const discountValue = parseFloat(discountInput.value) || 0;
+
+  let discountAmount = 0;
+  if (discountValue > 0) {
+    if (discountType.value === "percentage") {
+      discountAmount = (subtotal * discountValue) / 100;
+    } else {
+      discountAmount = discountValue;
+    }
+  }
+
+  const afterDiscount = subtotal - discountAmount;
+  const total = afterDiscount; // No tax
+
+  document.getElementById(
+    "subtotal"
+  ).textContent = `Rs.${subtotal.toLocaleString()}`;
+  document.getElementById("total").textContent = `Rs.${total.toLocaleString()}`;
+
+  // Update editable total field with calculated value (Subtotal - Discount)
+  const totalEditable = document.getElementById("total-editable");
+  if (totalEditable) {
+    totalEditable.value = total.toFixed(2);
+  }
+
+  // Update change calculation if cash payment
+  if (currentPaymentMethod === "cash") {
+    calculateChange();
+  }
+}
+
+// Calculate change for cash payment
+function calculateChange() {
+  // Use editable total if available, otherwise fall back to display total
+  const totalEditable = document.getElementById("total-editable");
+  const total = totalEditable
+    ? parseFloat(totalEditable.value) || 0
+    : parseFloat(
+        document
+          .getElementById("total")
+          .textContent.replace("Rs.", "")
+          .replace(/,/g, "")
+      );
+  const cashReceived =
+    parseFloat(document.getElementById("cash-received").value) || 0;
+  const change = cashReceived - total;
+
+  document.getElementById("change").textContent = `Rs.${Math.max(
+    0,
+    change
+  ).toLocaleString()}`;
+  document.getElementById("change").className =
+    change >= 0 ? "font-semibold text-green-600" : "font-semibold text-red-600";
+}
+
+// Select payment method
+function selectPaymentMethod(method) {
+  currentPaymentMethod = method;
+
+  // Update button styles
+  document.querySelectorAll(".payment-method-btn").forEach((btn) => {
+    btn.classList.remove(
+      "active",
+      "bg-blue-500",
+      "text-white",
+      "border-blue-500"
+    );
+    btn.classList.add("bg-gray-100", "text-gray-700", "border-gray-300");
+  });
+
+  const activeBtn = document.querySelector(`[data-method="${method}"]`);
+  activeBtn.classList.remove("bg-gray-100", "text-gray-700", "border-gray-300");
+  activeBtn.classList.add(
+    "active",
+    "bg-blue-500",
+    "text-white",
+    "border-blue-500"
+  );
+
+  // Show/hide payment sections
+  document.getElementById("cash-payment").style.display =
+    method === "cash" ? "block" : "none";
+  document.getElementById("card-payment").style.display =
+    method === "card" ? "block" : "none";
+}
+
+// Clear cart
+function clearCart() {
+  cart = [];
+  updateCartDisplay();
+  showNotification("Cart cleared", "info");
+}
+
+// Clear cart when switching tabs (without notification)
+function clearCartForTabSwitch() {
+  cart = [];
+  currentCustomer = null;
+
+  const customerSearch = document.getElementById("customer-search");
+  if (customerSearch) customerSearch.value = "";
+
+  const selectedCustomerId = document.getElementById("selected-customer-id");
+  if (selectedCustomerId) selectedCustomerId.value = "";
+
+  const customerSelectedInfo = document.getElementById(
+    "customer-selected-info"
+  );
+  if (customerSelectedInfo) customerSelectedInfo.classList.add("hidden");
+
+  const discountInput = document.getElementById("discount-input");
+  if (discountInput) discountInput.value = "0";
+
+  const cashReceived = document.getElementById("cash-received");
+  if (cashReceived) cashReceived.value = "";
+
+  updateCartDisplay();
+}
+
+// Update UI for repair mode
+function updateUIForRepairMode() {
+  // Update cart header
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) {
+    cartHeader.textContent = "Repair Invoice";
+  }
+
+  // Update empty cart message
+  updateEmptyCartMessage("repair");
+
+  // Hide discount section for repairs
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) {
+    discountRow.style.display = "none";
+  }
+
+  // Update button text
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="file-text" class="w-5 h-5 mr-2 inline"></i>Complete Repair Invoice';
+    feather.replace();
+  }
+}
+
+// Update UI for shop mode
+function updateUIForShopMode() {
+  // Update cart header
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) {
+    cartHeader.textContent = "Shopping Cart";
+  }
+
+  // Update empty cart message
+  updateEmptyCartMessage("shop");
+
+  // Show discount section for shop
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) {
+    discountRow.style.display = "flex";
+  }
+
+  // Update button text
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="credit-card" class="w-5 h-5 mr-2 inline"></i>Complete Sale';
+    feather.replace();
+  }
+}
+
+// Update empty cart message based on mode
+function updateEmptyCartMessage(mode) {
+  const emptyCart = document.getElementById("empty-cart");
+  if (emptyCart && cart.length === 0) {
+    if (mode === "repair") {
+      emptyCart.innerHTML = `
+        <i data-feather="tool" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No repair selected</p>
+        <p class="text-sm">Select a repair order to create invoice</p>
+      `;
+    } else if (mode === "customer") {
+      emptyCart.innerHTML = `
+        <i data-feather="users" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No customer selected</p>
+        <p class="text-sm">Select a customer to view details</p>
+      `;
+    } else if (mode === "return") {
+      emptyCart.innerHTML = `
+        <i data-feather="rotate-ccw" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>No return selected</p>
+        <p class="text-sm">Select a return to process</p>
+      `;
+    } else {
+      emptyCart.innerHTML = `
+        <i data-feather="shopping-cart" class="w-12 h-12 mx-auto mb-2 text-gray-300"></i>
+        <p>Your cart is empty</p>
+        <p class="text-sm">Add products to get started</p>
+      `;
+    }
+    feather.replace();
+  }
+}
+
+// Update UI for customer mode
+function updateUIForCustomerMode() {
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) cartHeader.textContent = "Customer Details";
+
+  updateEmptyCartMessage("customer");
+
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) discountRow.style.display = "none";
+
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="user-check" class="w-5 h-5 mr-2 inline"></i>Select Customer';
+    feather.replace();
+  }
+}
+
+// Update UI for return mode
+function updateUIForReturnMode() {
+  const cartHeader = document.getElementById("cart-header");
+  if (cartHeader) cartHeader.textContent = "Return Details";
+
+  updateEmptyCartMessage("return");
+
+  const discountRow =
+    document.getElementById("discount-input")?.parentElement?.parentElement;
+  if (discountRow) discountRow.style.display = "none";
+
+  const completeBtn = document.querySelector(
+    "button[onclick='processPayment()']"
+  );
+  if (completeBtn) {
+    completeBtn.innerHTML =
+      '<i data-feather="rotate-ccw" class="w-5 h-5 mr-2 inline"></i>Process Return';
+    feather.replace();
+  }
+}
+
+// Load customer table
+function loadCustomerTable(customersToShow = customerData) {
+  const tbody = document.getElementById("customer-table-body");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  customersToShow.forEach((customer) => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-gray-50 cursor-pointer";
+    row.innerHTML = `
+      <td class="px-3 py-2 text-sm font-medium text-gray-900">${
+        customer.name
+      }</td>
+      <td class="px-3 py-2 text-sm text-gray-600">${customer.phone}</td>
+      <td class="px-3 py-2 text-sm text-gray-600">${customer.email || "-"}</td>
+      <td class="px-3 py-2 text-sm text-gray-900 font-medium">Rs. ${
+        customer.totalPurchases?.toLocaleString() || "0"
+      }</td>
+      <td class="px-3 py-2" onclick="event.stopPropagation()">
+        <button onclick="viewCustomerDetails(${
+          customer.id
+        })" class="text-blue-600 hover:text-blue-900 p-1 rounded" title="View Details">
+          <i data-feather="eye" class="w-4 h-4"></i>
+        </button>
+        <button onclick="editCustomerDetails(${
+          customer.id
+        })" class="text-green-600 hover:text-green-900 p-1 rounded ml-2" title="Edit">
+          <i data-feather="edit" class="w-4 h-4"></i>
+        </button>
+      </td>
+    `;
+
+    row.onclick = () => selectCustomerFromTable(customer.id);
+    tbody.appendChild(row);
+  });
+
+  feather.replace();
+}
+
+// Load return table
+function loadReturnTable(returnsToShow = returnData) {
+  const tbody = document.getElementById("return-table-body");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  returnsToShow.forEach((returnItem) => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-gray-50";
+
+    const statusColor =
+      returnItem.status === "Completed"
+        ? "green"
+        : returnItem.status === "Approved"
+        ? "blue"
+        : returnItem.status === "Pending"
+        ? "yellow"
+        : "red";
+
+    row.innerHTML = `
+      <td class="px-3 py-2 text-sm font-medium text-gray-900">${
+        returnItem.id
+      }</td>
+      <td class="px-3 py-2 text-sm text-gray-600">${
+        returnItem.invoiceNumber
+      }</td>
+      <td class="px-3 py-2 text-sm text-gray-600">${returnItem.customer}</td>
+      <td class="px-3 py-2 text-sm text-gray-900">${returnItem.product}</td>
+      <td class="px-3 py-2 text-sm text-gray-600">${returnItem.reason}</td>
+      <td class="px-3 py-2 text-sm text-gray-900 font-medium">Rs. ${returnItem.amount.toLocaleString()}</td>
+      <td class="px-3 py-2">
+        <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-${statusColor}-100 text-${statusColor}-800">
+          ${returnItem.status}
+        </span>
+      </td>
+      <td class="px-3 py-2">
+        <button onclick="viewReturnDetails('${
+          returnItem.id
+        }')" class="text-blue-600 hover:text-blue-900 p-1 rounded" title="View Details">
+          <i data-feather="eye" class="w-4 h-4"></i>
+        </button>
+        <button onclick="processReturnAction('${
+          returnItem.id
+        }')" class="text-green-600 hover:text-green-900 p-1 rounded ml-2" title="Process">
+          <i data-feather="check-circle" class="w-4 h-4"></i>
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(row);
+  });
+
+  feather.replace();
+}
+
+// Handle customer search in customer tab
+function handleCustomerSearch() {
+  const searchInput = document.getElementById("customer-search-input");
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+
+  const filtered = customerData.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchTerm) ||
+      customer.phone
+        .replace(/\s/g, "")
+        .toLowerCase()
+        .includes(searchTerm.replace(/\s/g, "")) ||
+      (customer.email && customer.email.toLowerCase().includes(searchTerm))
+  );
+
+  loadCustomerTable(filtered);
+}
+
+// Handle return search
+function handleReturnSearch() {
+  const searchInput = document.getElementById("return-search-input");
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+
+  const filtered = returnData.filter(
+    (returnItem) =>
+      returnItem.id.toLowerCase().includes(searchTerm) ||
+      returnItem.invoiceNumber.toLowerCase().includes(searchTerm) ||
+      returnItem.customer.toLowerCase().includes(searchTerm) ||
+      returnItem.product.toLowerCase().includes(searchTerm)
+  );
+
+  loadReturnTable(filtered);
+}
+
+// Select customer from table - open details modal
+function selectCustomerFromTable(customerId) {
+  const customer = customerData.find((c) => c.id === customerId);
+  if (!customer) return;
+
+  const customerPurchases = customerPurchasesData.filter(
+    (p) => p.customerId === customerId
+  );
+  const customerRepairs = customerRepairsData.filter(
+    (r) => r.customerId === customerId
+  );
+  const totalSpent = customerPurchases.reduce(
+    (sum, purchase) => sum + purchase.totalAmount,
+    0
+  );
+
+  const modalContent = `
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50" onclick="closePOSCustomerDetailsModal(event)">
+      <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-lg font-medium text-gray-900">Customer Details</h3>
+          <button onclick="closePOSCustomerDetailsModal()" class="text-gray-400 hover:text-gray-600">
+            <i data-feather="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+        
+        <div class="p-6">
+          <!-- Customer Info Header -->
+          <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <div class="flex justify-between items-start">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900">${
+                  customer.name
+                }</h4>
+                <p class="text-gray-600">${customer.phone}</p>
+                <p class="text-gray-600">${
+                  customer.email || "No email provided"
+                }</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm text-gray-600 mt-1">Total Spent: <span class="font-semibold">Rs. ${totalSpent.toLocaleString()}</span></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8">
+              <button onclick="switchPOSCustomerTab('purchases')" id="posCustomerPurchasesTab" class="pos-customer-tab-btn border-b-2 border-blue-500 py-2 px-1 text-sm font-medium text-blue-600">
+                Purchases
+              </button>
+              <button onclick="switchPOSCustomerTab('repairs')" id="posCustomerRepairsTab" class="pos-customer-tab-btn border-b-2 border-transparent py-2 px-1 text-sm font-medium text-gray-500 hover:text-gray-700">
+                Repairs
+              </button>
+            </nav>
+          </div>
+
+          <!-- Tab Content -->
+          <div id="posCustomerPurchasesContent" class="pos-customer-tab-content">
+            <h5 class="text-lg font-medium text-gray-900 mb-4">Purchase History</h5>
+            <div id="posCustomerPurchasesList" class="space-y-4">
+              ${
+                customerPurchases.length === 0
+                  ? `
+                <div class="text-center py-8 text-gray-500">
+                  No purchase history found
+                </div>
+              `
+                  : customerPurchases
+                      .map(
+                        (purchase) => `
+                <div class="border border-gray-200 rounded-lg p-4">
+                  <div class="flex justify-between items-start mb-2">
+                    <h6 class="font-medium text-gray-900">Invoice #${
+                      purchase.invoiceNo
+                    }</h6>
+                    <span class="text-sm text-gray-500">${new Date(
+                      purchase.purchaseDate
+                    ).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <div class="space-y-2 mb-3">
+                    ${purchase.items
+                      .map(
+                        (item) => `
+                      <div class="flex justify-between text-sm">
+                        <span>${item.productName} x${item.quantity}</span>
+                        <span>Rs. ${(
+                          item.price * item.quantity
+                        ).toLocaleString()}</span>
+                      </div>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                  
+                  <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                    <span class="text-sm text-gray-600">Payment: ${
+                      purchase.paymentMethod
+                    }</span>
+                    <span class="font-semibold text-gray-900">Total: Rs. ${purchase.totalAmount.toLocaleString()}</span>
+                  </div>
+                </div>
+              `
+                      )
+                      .join("")
+              }
+            </div>
+          </div>
+
+          <div id="posCustomerRepairsContent" class="pos-customer-tab-content hidden">
+            <h5 class="text-lg font-medium text-gray-900 mb-4">Repair History</h5>
+            <div id="posCustomerRepairsList" class="space-y-4">
+              ${
+                customerRepairs.length === 0
+                  ? `
+                <div class="text-center py-8 text-gray-500">
+                  No repair history found
+                </div>
+              `
+                  : customerRepairs
+                      .map((repair) => {
+                        const statusColor =
+                          repair.status === "Completed"
+                            ? "bg-green-100 text-green-800"
+                            : repair.status === "In Progress"
+                            ? "bg-blue-100 text-blue-800"
+                            : repair.status === "Pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-gray-100 text-gray-800";
+                        return `
+                  <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-start mb-2">
+                      <h6 class="font-medium text-gray-900">Repair #${
+                        repair.repairJobNo
+                      }</h6>
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}">
+                        ${repair.status}
+                      </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-sm mb-3">
+                      <div>
+                        <span class="text-gray-600">Device:</span>
+                        <p class="font-medium">${repair.deviceBrand} - ${
+                          repair.deviceModel
+                        }</p>
+                      </div>
+                      <div>
+                        <span class="text-gray-600">Issue:</span>
+                        <p class="font-medium">${repair.issue}</p>
+                      </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+                      <span class="text-sm text-gray-600">Date: ${new Date(
+                        repair.repairDate
+                      ).toLocaleDateString()}</span>
+                      <span class="font-semibold text-gray-900">Cost: Rs. ${repair.repairCost.toLocaleString()}</span>
+                    </div>
+                  </div>
+                `;
+                      })
+                      .join("")
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "pos-customer-details-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  feather.replace();
+}
+
+// Close POS customer details modal
+function closePOSCustomerDetailsModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+  const modal = document.getElementById("pos-customer-details-modal");
+  if (modal) modal.remove();
+}
+
+// Switch tabs in POS customer details modal
+function switchPOSCustomerTab(tabName) {
+  // Hide all tab contents
+  document.querySelectorAll(".pos-customer-tab-content").forEach((content) => {
+    content.classList.add("hidden");
+  });
+
+  // Remove active class from all tabs
+  document.querySelectorAll(".pos-customer-tab-btn").forEach((btn) => {
+    btn.classList.remove("border-blue-500", "text-blue-600");
+    btn.classList.add("border-transparent", "text-gray-500");
+  });
+
+  // Show selected tab content
+  document
+    .getElementById(
+      `posCustomer${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Content`
+    )
+    .classList.remove("hidden");
+
+  // Add active class to selected tab
+  const activeTab = document.getElementById(
+    `posCustomer${tabName.charAt(0).toUpperCase() + tabName.slice(1)}Tab`
+  );
+  activeTab.classList.add("border-blue-500", "text-blue-600");
+  activeTab.classList.remove("border-transparent", "text-gray-500");
+}
+
+// View customer details
+function viewCustomerDetails(customerId) {
+  const customer = customerData.find((c) => c.id === customerId);
+  if (!customer) return;
+
+  const modalContent = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeCustomerDetailsModal()">
+      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Customer Details</h2>
+          <button onclick="closeCustomerDetailsModal()" class="text-gray-500 hover:text-gray-700">
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Customer ID</label>
+              <p class="text-gray-900 font-medium">${customer.id}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Name</label>
+              <p class="text-gray-900 font-medium">${customer.name}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Phone</label>
+              <p class="text-gray-900">${customer.phone}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Email</label>
+              <p class="text-gray-900">${customer.email || "-"}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Total Purchases</label>
+              <p class="text-gray-900 font-bold text-green-600">Rs. ${
+                customer.totalPurchases?.toLocaleString() || "0"
+              }</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Purchase Count</label>
+              <p class="text-gray-900">${customer.purchaseCount || 0} orders</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Last Purchase</label>
+              <p class="text-gray-900">${customer.lastPurchase || "-"}</p>
+            </div>
+          </div>
+          
+          <div class="border-t pt-4">
+            <h3 class="font-semibold text-gray-800 mb-2">Recent Purchase History</h3>
+            <div class="bg-gray-50 p-3 rounded text-sm text-gray-600">
+              <p>• Last order: Rs. ${Math.floor(
+                Math.random() * 50000 + 5000
+              ).toLocaleString()}</p>
+              <p>• Average order: Rs. ${Math.floor(
+                (customer.totalPurchases || 0) / (customer.purchaseCount || 1)
+              ).toLocaleString()}</p>
+              <p>• Customer since: ${new Date(
+                2023,
+                Math.floor(Math.random() * 12),
+                1
+              ).toLocaleDateString()}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3 mt-6">
+          <button onclick="closeCustomerDetailsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            Close
+          </button>
+          <button onclick="closeCustomerDetailsModal(); editCustomerDetails(${
+            customer.id
+          })" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            Edit Customer
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "customer-details-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  feather.replace();
+}
+
+// Close customer details modal
+function closeCustomerDetailsModal() {
+  const modal = document.getElementById("customer-details-modal");
+  if (modal) modal.remove();
+}
+
+// Edit customer details
+function editCustomerDetails(customerId) {
+  const customer = customerData.find((c) => c.id === customerId);
+  if (!customer) return;
+
+  const modalContent = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeEditCustomerModalBackdrop(event)">
+      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Edit Customer</h2>
+          <button onclick="closeEditCustomerModal()" class="text-gray-500 hover:text-gray-700">
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <form onsubmit="saveCustomerEdit(event, ${
+          customer.id
+        })" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+              <input type="text" id="edit-customer-name" value="${
+                customer.name
+              }" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+              <input type="tel" id="edit-customer-phone" value="${
+                customer.phone
+              }" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="col-span-2">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input type="email" id="edit-customer-email" value="${
+                customer.email || ""
+              }"  
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" onclick="closeEditCustomerModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+              Cancel
+            </button>
+            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "edit-customer-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  feather.replace();
+}
+
+// Close edit customer modal
+function closeEditCustomerModal() {
+  const modal = document.getElementById("edit-customer-modal");
+  if (modal) modal.remove();
+}
+
+// Close edit customer modal when clicking backdrop
+function closeEditCustomerModalBackdrop(event) {
+  if (event.target === event.currentTarget) {
+    closeEditCustomerModal();
+  }
+}
+
+// Save customer edit
+function saveCustomerEdit(event, customerId) {
+  event.preventDefault();
+
+  const customer = customerData.find((c) => c.id === customerId);
+  if (!customer) return;
+
+  customer.name = document.getElementById("edit-customer-name").value;
+  customer.phone = document.getElementById("edit-customer-phone").value;
+  customer.email = document.getElementById("edit-customer-email").value;
+
+  closeEditCustomerModal();
+  loadCustomerTable();
+  showNotification(`Customer ${customer.name} updated successfully`, "success");
+}
+
+// Open add customer from tab
+function openAddCustomerFromTab() {
+  addNewCustomer();
+}
+
+// Open new return form
+function openNewReturnForm() {
+  const modalContent = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="closeNewReturnModalBackdrop(event)">
+      <!-- Modal Size Controls:
+           w-[70vw] = 70% of viewport width (change 70 to adjust: 60vw, 80vw, etc.)
+           max-w-none = no maximum width limit (or use max-w-7xl for ~80rem)
+           min-h-[500px] = minimum height (change to adjust)
+      -->
+      <div class="bg-white rounded-lg p-8 w-[70vw] max-w-none min-h-[500px] max-h-[85vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Create New Return</h2>
+          <button onclick="closeNewReturnModal()" class="text-gray-500 hover:text-gray-700">
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <form onsubmit="saveNewReturn(event)" class="space-y-4">
+          <!-- Invoice Search Section -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Invoice Number or Customer *</label>
+            <div class="relative">
+              <input 
+                type="text" 
+                id="return-invoice-search" 
+                placeholder="Search by invoice number or customer name..."
+                onkeyup="searchInvoicesForReturn()"
+                onfocus="showInvoiceDropdown()"
+                autocomplete="off"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500" 
+              />
+              <!-- Dropdown Results -->
+              <div id="invoice-dropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-y-auto hidden">
+                <!-- Results will be populated here -->
+              </div>
+            </div>
+            <input type="hidden" id="selected-invoice-id" required>
+          </div>
+
+          <!-- Selected Invoice Info -->
+          <div id="selected-invoice-info" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="text-sm font-medium text-blue-900">Invoice: <span id="display-invoice-number"></span></p>
+                <p class="text-sm text-blue-700">Customer: <span id="display-customer-name"></span></p>
+                <p class="text-sm text-blue-700">Date: <span id="display-invoice-date"></span></p>
+              </div>
+              <button type="button" onclick="clearSelectedInvoice()" class="text-blue-600 hover:text-blue-800 text-sm">
+                Change
+              </button>
+            </div>
+          </div>
+
+          <!-- Invoice Items Section (shown after invoice selection) -->
+          <div id="invoice-items-section" class="hidden">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Select Items to Return</label>
+            <div class="border border-gray-300 rounded-lg divide-y divide-gray-200 max-h-64 overflow-y-auto" id="invoice-items-list">
+              <!-- Items will be populated here -->
+            </div>
+            <div id="return-total-row" class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex justify-between items-center">
+              <span class="text-sm font-medium text-gray-700">Return Total:</span>
+              <span id="return-total-amount" class="text-lg font-bold text-blue-600">Rs. 0</span>
+            </div>
+          </div>
+
+          <!-- Return Reason and Notes -->
+          <div id="return-details-section" class="hidden space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Return Reason *</label>
+                <select id="return-reason" required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  <option value="">Select Reason</option>
+                  <option value="Defective">Defective</option>
+                  <option value="Changed Mind">Changed Mind</option>
+                  <option value="Wrong Item">Wrong Item</option>
+                  <option value="Not as Described">Not as Described</option>
+                  <option value="Damaged">Damaged</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+                <select id="return-status" required
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Completed">Completed</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+              <textarea id="return-notes" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Additional details about the return..."></textarea>
+            </div>
+          </div>
+          
+          <div class="flex justify-end space-x-3 pt-4">
+            <button type="button" onclick="closeNewReturnModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+              Cancel
+            </button>
+            <button type="submit" id="submit-return-btn" disabled class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed">
+              Create Return
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  `;
+
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "new-return-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  feather.replace();
+}
+
+// Search invoices for return
+function searchInvoicesForReturn() {
+  const searchTerm = document
+    .getElementById("return-invoice-search")
+    .value.toLowerCase();
+  const dropdown = document.getElementById("invoice-dropdown");
+
+  if (searchTerm.length === 0) {
+    dropdown.classList.add("hidden");
+    return;
+  }
+
+  const filteredPurchases = customerPurchasesData.filter((purchase) => {
+    const customer = customerData.find((c) => c.id === purchase.customerId);
+    const customerName = customer ? customer.name.toLowerCase() : "";
+    return (
+      purchase.invoiceNo.toLowerCase().includes(searchTerm) ||
+      customerName.includes(searchTerm)
+    );
+  });
+
+  if (filteredPurchases.length === 0) {
+    dropdown.innerHTML = `
+      <div class="px-4 py-3 text-sm text-gray-500 text-center">
+        No invoices found
+      </div>
+    `;
+    dropdown.classList.remove("hidden");
+    return;
+  }
+
+  dropdown.innerHTML = filteredPurchases
+    .map((purchase) => {
+      const customer = customerData.find((c) => c.id === purchase.customerId);
+      return `
+      <div class="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0" onclick="selectInvoiceForReturn(${
+        purchase.id
+      })">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm font-medium text-gray-900">${
+              purchase.invoiceNo
+            }</p>
+            <p class="text-xs text-gray-600">${
+              customer ? customer.name : "Unknown Customer"
+            }</p>
+          </div>
+          <div class="text-right">
+            <p class="text-sm font-medium text-gray-900">Rs. ${purchase.totalAmount.toLocaleString()}</p>
+            <p class="text-xs text-gray-500">${new Date(
+              purchase.purchaseDate
+            ).toLocaleDateString()}</p>
+          </div>
+        </div>
+      </div>
+    `;
+    })
+    .join("");
+
+  dropdown.classList.remove("hidden");
+}
+
+// Show invoice dropdown
+function showInvoiceDropdown() {
+  searchInvoicesForReturn();
+}
+
+// Select invoice for return
+function selectInvoiceForReturn(purchaseId) {
+  const purchase = customerPurchasesData.find((p) => p.id === purchaseId);
+  if (!purchase) return;
+
+  const customer = customerData.find((c) => c.id === purchase.customerId);
+
+  // Hide dropdown
+  document.getElementById("invoice-dropdown").classList.add("hidden");
+
+  // Set hidden field
+  document.getElementById("selected-invoice-id").value = purchaseId;
+  document.getElementById("return-invoice-search").value = purchase.invoiceNo;
+
+  // Show selected invoice info
+  document.getElementById("display-invoice-number").textContent =
+    purchase.invoiceNo;
+  document.getElementById("display-customer-name").textContent = customer
+    ? customer.name
+    : "Unknown";
+  document.getElementById("display-invoice-date").textContent = new Date(
+    purchase.purchaseDate
+  ).toLocaleDateString();
+  document.getElementById("selected-invoice-info").classList.remove("hidden");
+
+  // Load invoice items
+  loadInvoiceItems(purchase);
+
+  // Show items section and return details
+  document.getElementById("invoice-items-section").classList.remove("hidden");
+  document.getElementById("return-details-section").classList.remove("hidden");
+
+  // Enable submit button
+  document.getElementById("submit-return-btn").disabled = false;
+}
+
+// Load invoice items with checkboxes
+function loadInvoiceItems(purchase) {
+  const itemsList = document.getElementById("invoice-items-list");
+
+  itemsList.innerHTML = purchase.items
+    .map(
+      (item, index) => `
+    <div class="p-3 hover:bg-gray-50">
+      <label class="flex items-center cursor-pointer">
+        <input 
+          type="checkbox" 
+          class="return-item-checkbox w-4 h-4 text-blue-600 rounded focus:ring-blue-500" 
+          data-item-index="${index}"
+          data-product-name="${item.productName}"
+          data-quantity="${item.quantity}"
+          data-price="${item.price}"
+          onchange="updateReturnTotal()"
+        />
+        <div class="ml-3 flex-1">
+          <div class="flex justify-between items-center">
+            <div>
+              <p class="text-sm font-medium text-gray-900">${
+                item.productName
+              }</p>
+              <p class="text-xs text-gray-500">Quantity: ${
+                item.quantity
+              } × Rs. ${item.price.toLocaleString()}</p>
+            </div>
+            <p class="text-sm font-semibold text-gray-900">Rs. ${(
+              item.quantity * item.price
+            ).toLocaleString()}</p>
+          </div>
+        </div>
+      </label>
+    </div>
+  `
+    )
+    .join("");
+}
+
+// Clear selected invoice
+function clearSelectedInvoice() {
+  document.getElementById("selected-invoice-id").value = "";
+  document.getElementById("return-invoice-search").value = "";
+  document.getElementById("selected-invoice-info").classList.add("hidden");
+  document.getElementById("invoice-items-section").classList.add("hidden");
+  document.getElementById("return-details-section").classList.add("hidden");
+  document.getElementById("invoice-items-list").innerHTML = "";
+  document.getElementById("submit-return-btn").disabled = true;
+  document.getElementById("return-invoice-search").focus();
+}
+
+// Update return total (optional - for display)
+function updateReturnTotal() {
+  const checkboxes = document.querySelectorAll(".return-item-checkbox:checked");
+  let total = 0;
+  checkboxes.forEach((cb) => {
+    const quantity = parseFloat(cb.dataset.quantity);
+    const price = parseFloat(cb.dataset.price);
+    total += quantity * price;
+  });
+
+  // Update total display
+  const totalAmountEl = document.getElementById("return-total-amount");
+  if (totalAmountEl) {
+    totalAmountEl.textContent = `Rs. ${total.toLocaleString()}`;
+  }
+
+  // Enable/disable submit button based on selection
+  const submitBtn = document.getElementById("submit-return-btn");
+  if (submitBtn) {
+    submitBtn.disabled = checkboxes.length === 0;
+  }
+}
+
+// Close new return modal
+function closeNewReturnModal() {
+  const modal = document.getElementById("new-return-modal");
+  if (modal) modal.remove();
+}
+
+// Close new return modal when clicking backdrop
+function closeNewReturnModalBackdrop(event) {
+  if (event.target === event.currentTarget) {
+    closeNewReturnModal();
+  }
+}
+
+// Save new return
+function saveNewReturn(event) {
+  event.preventDefault();
+
+  // Get selected invoice
+  const purchaseId = parseInt(
+    document.getElementById("selected-invoice-id").value
+  );
+  const purchase = customerPurchasesData.find((p) => p.id === purchaseId);
+
+  if (!purchase) {
+    showNotification("Please select a valid invoice", "error");
+    return;
+  }
+
+  // Get selected items
+  const checkboxes = document.querySelectorAll(".return-item-checkbox:checked");
+
+  if (checkboxes.length === 0) {
+    showNotification("Please select at least one item to return", "error");
+    return;
+  }
+
+  const customer = customerData.find((c) => c.id === purchase.customerId);
+  const returnedItems = [];
+  let totalAmount = 0;
+
+  checkboxes.forEach((cb) => {
+    const productName = cb.dataset.productName;
+    const quantity = parseInt(cb.dataset.quantity);
+    const price = parseFloat(cb.dataset.price);
+    const itemTotal = quantity * price;
+
+    returnedItems.push({
+      productName,
+      quantity,
+      price,
+      total: itemTotal,
+    });
+
+    totalAmount += itemTotal;
+  });
+
+  const newReturn = {
+    id: `RET-${String(returnData.length + 1).padStart(3, "0")}`,
+    invoiceNumber: purchase.invoiceNo,
+    customer: customer ? customer.name : "Unknown Customer",
+    product:
+      returnedItems.length > 1
+        ? `${returnedItems.length} items`
+        : returnedItems[0].productName,
+    returnedItems: returnedItems,
+    amount: totalAmount,
+    reason: document.getElementById("return-reason").value,
+    status: document.getElementById("return-status").value,
+    date: new Date().toISOString().split("T")[0],
+    notes: document.getElementById("return-notes").value || "",
+  };
+
+  returnData.unshift(newReturn);
+  closeNewReturnModal();
+  loadReturnTable();
+  showNotification(
+    `Return ${
+      newReturn.id
+    } created successfully (Rs. ${totalAmount.toLocaleString()})`,
+    "success"
+  );
+}
+
+// View return details
+function viewReturnDetails(returnId) {
+  const returnItem = returnData.find((r) => r.id === returnId);
+  if (!returnItem) return;
+
+  const statusColor =
+    returnItem.status === "Completed"
+      ? "green"
+      : returnItem.status === "Approved"
+      ? "blue"
+      : returnItem.status === "Pending"
+      ? "yellow"
+      : "red";
+
+  const modalContent = `
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeReturnDetailsModalBackdrop(event)">
+      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold text-gray-800">Return Details</h2>
+          <button onclick="closeReturnDetailsModal()" class="text-gray-500 hover:text-gray-700">
+            <i data-feather="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div class="flex items-center justify-between pb-3 border-b">
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900">${
+                returnItem.id
+              }</h3>
+              <p class="text-sm text-gray-600">Created on ${returnItem.date}</p>
+            </div>
+            <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-${statusColor}-100 text-${statusColor}-800">
+              ${returnItem.status}
+            </span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Invoice Number</label>
+              <p class="text-gray-900 font-medium">${
+                returnItem.invoiceNumber
+              }</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Customer</label>
+              <p class="text-gray-900 font-medium">${returnItem.customer}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Product</label>
+              <p class="text-gray-900">${returnItem.product}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Return Amount</label>
+              <p class="text-gray-900 font-bold text-red-600">Rs. ${returnItem.amount.toLocaleString()}</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">Reason</label>
+              <p class="text-gray-900">${returnItem.reason}</p>
+            </div>
+          </div>
+          
+          ${
+            returnItem.notes
+              ? `
+            <div class="border-t pt-4">
+              <label class="block text-sm font-medium text-gray-600 mb-1">Notes</label>
+              <div class="bg-gray-50 p-3 rounded text-sm text-gray-700">
+                ${returnItem.notes}
+              </div>
+            </div>
+          `
+              : ""
+          }
+          
+          ${
+            returnItem.status === "Pending" || returnItem.status === "Approved"
+              ? `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+              <p class="text-sm text-yellow-800">
+                <i data-feather="alert-circle" class="w-4 h-4 inline mr-1"></i>
+                ${
+                  returnItem.status === "Pending"
+                    ? "This return is awaiting approval."
+                    : "This return has been approved and is ready to be completed."
+                }
+              </p>
+            </div>
+          `
+              : ""
+          }
+        </div>
+        
+        <div class="flex justify-end space-x-3 mt-6">
+          <button onclick="closeReturnDetailsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+            Close
+          </button>
+          ${
+            returnItem.status === "Pending"
+              ? `
+            <button onclick="closeReturnDetailsModal(); processReturnAction('${returnItem.id}')" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+              Approve Return
+            </button>
+          `
+              : ""
+          }
+          ${
+            returnItem.status === "Approved"
+              ? `
+            <button onclick="closeReturnDetailsModal(); processReturnAction('${returnItem.id}')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+              Complete Return
+            </button>
+          `
+              : ""
+          }
+        </div>
+      </div>
+    </div>
+  `;
+
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "return-details-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  feather.replace();
+}
+
+// Close return details modal
+function closeReturnDetailsModal() {
+  const modal = document.getElementById("return-details-modal");
+  if (modal) modal.remove();
+}
+
+// Close return details modal when clicking backdrop
+function closeReturnDetailsModalBackdrop(event) {
+  if (event.target === event.currentTarget) {
+    closeReturnDetailsModal();
+  }
+}
+
+// Process return action
+function processReturnAction(returnId) {
+  const returnItem = returnData.find((r) => r.id === returnId);
+  if (!returnItem) return;
+
+  if (returnItem.status === "Pending") {
+    returnItem.status = "Approved";
+    loadReturnTable();
+    showNotification(`Return ${returnId} approved`, "success");
+  } else if (returnItem.status === "Approved") {
+    returnItem.status = "Completed";
+    loadReturnTable();
+    showNotification(`Return ${returnId} completed`, "success");
+  }
+}
+
+// Handle manual total change
+function handleManualTotalChange() {
+  const totalEditable = document.getElementById("total-editable");
+  const manualTotal = parseFloat(totalEditable.value) || 0;
+
+  // Update the hidden total display
+  document.getElementById(
+    "total"
+  ).textContent = `Rs.${manualTotal.toLocaleString()}`;
+
+  // Recalculate change if cash payment
+  if (currentPaymentMethod === "cash") {
+    calculateChange();
+  }
+
+  showNotification("Total amount manually adjusted", "info");
+}
+
+// Add new customer
+function addNewCustomer() {
+  document.getElementById("add-customer-modal").classList.remove("hidden");
+}
+
+// Close add customer modal
+function closeAddCustomerModal() {
+  document.getElementById("add-customer-modal").classList.add("hidden");
+  // Clear form
+  document.getElementById("customer-name").value = "";
+  document.getElementById("customer-phone").value = "";
+  document.getElementById("customer-email").value = "";
+  document.getElementById("customer-address").value = "";
+}
+
+// Save new customer
+function saveNewCustomer(event) {
+  event.preventDefault();
+
+  const name = document.getElementById("customer-name").value;
+  const phone = document.getElementById("customer-phone").value;
+  const email = document.getElementById("customer-email").value;
+  const address = document.getElementById("customer-address").value;
+
+  // In a real application, this would save to the backend
+  const newCustomer = {
+    id: customers.length + 1,
+    name,
+    phone,
+    email,
+    address,
+  };
+
+  customers.push(newCustomer);
+
+  // Add to customer select
+  const customerSelect = document.getElementById("customer-select");
+  const option = document.createElement("option");
+  option.value = newCustomer.id;
+  option.textContent = `${newCustomer.name} - ${newCustomer.phone}`;
+  customerSelect.appendChild(option);
+  customerSelect.value = newCustomer.id;
+
+  closeAddCustomerModal();
+  showNotification("Customer added successfully", "success");
+}
+
+// Process payment
+function processPayment() {
+  // Check if user has permission to process payments
+  if (!hasPermission("pos")) {
+    showNotification("You do not have permission to process payments", "error");
+    return;
+  }
+
+  if (cart.length === 0) {
+    showNotification("Cart is empty", "error");
+    return;
+  }
+
+  const total = parseFloat(
+    document
+      .getElementById("total")
+      .textContent.replace("Rs.", "")
+      .replace(/,/g, "")
+  );
+
+  if (currentPaymentMethod === "cash") {
+    const cashReceived =
+      parseFloat(document.getElementById("cash-received").value) || 0;
+    if (cashReceived < total) {
+      showNotification("Insufficient cash received", "error");
+      return;
+    }
+  }
+
+  // Generate invoice number
+  const invoiceNumber = `INV${String(++lastInvoiceNumber).padStart(6, "0")}`;
+
+  // Create sale record (in real app, this would be saved to backend)
+  const sale = {
+    invoiceNumber,
+    date: new Date().toISOString(),
+    customer: currentCustomer,
+    items: [...cart],
+    subtotal: cart.reduce(
+      (sum, item) =>
+        sum + (item.totalPrice || item.total || item.price * item.quantity),
+      0
+    ),
+    discount: 0, // Calculate from form
+    total: total,
+    paymentMethod: currentPaymentMethod,
+    cashReceived:
+      currentPaymentMethod === "cash"
+        ? parseFloat(document.getElementById("cash-received").value)
+        : total,
+    change:
+      currentPaymentMethod === "cash"
+        ? Math.max(
+            0,
+            parseFloat(document.getElementById("cash-received").value) - total
+          )
+        : 0,
+  };
+
+  // Update product stock (in real app, this would be done on backend)
+  cart.forEach((cartItem) => {
+    const product = posProducts.find((p) => p.id === cartItem.id);
+    if (product) {
+      product.stock -= cartItem.quantity;
+    }
+  });
+
+  // Show success modal
+  document.getElementById("invoice-number").textContent = invoiceNumber;
+  document.getElementById(
+    "payment-total"
+  ).textContent = `Rs.${total.toLocaleString()}`;
+  document.getElementById("payment-success-modal").classList.remove("hidden");
+
+  // Clear cart and reset form
+  cart = [];
+  updateCartDisplay();
+  document.getElementById("cash-received").value = "";
+  document.getElementById("discount-input").value = "";
+  document.getElementById("customer-select").value = "";
+
+  showNotification("Payment processed successfully", "success");
+}
+
+// Hold sale
+function holdSale() {
+  if (cart.length === 0) {
+    showNotification("Cart is empty", "error");
+    return;
+  }
+
+  // In a real application, this would save the current cart state
+  const heldSale = {
+    id: Date.now(),
+    date: new Date().toISOString(),
+    items: [...cart],
+    customer: currentCustomer,
+  };
+
+  // Store in localStorage for demo purposes
+  const heldSales = JSON.parse(localStorage.getItem("heldSales") || "[]");
+  heldSales.push(heldSale);
+  localStorage.setItem("heldSales", JSON.stringify(heldSales));
+
+  clearCart();
+  showNotification("Sale held successfully", "success");
+}
+
+// Print receipt
+function printReceipt() {
+  if (cart.length === 0) {
+    showNotification("No items to print", "error");
+    return;
+  }
+
+  // Create receipt content
+  const receiptWindow = window.open("", "_blank", "width=300,height=600");
+  const total = parseFloat(
+    document
+      .getElementById("total")
+      .textContent.replace("Rs.", "")
+      .replace(/,/g, "")
+  );
+
+  receiptWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Receipt</title>
+            <style>
+                body { font-family: 'Courier New', monospace; font-size: 12px; margin: 10px; }
+                .header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px; margin-bottom: 10px; }
+                .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+                .total { border-top: 1px dashed #000; padding-top: 10px; margin-top: 10px; font-weight: bold; }
+                .center { text-align: center; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h2>Thilina Mobiles</h2>
+                <p>Mobile Shop & Accessories</p>
+                <p>Receipt</p>
+                <p>Date: ${new Date().toLocaleString()}</p>
+                <p>Invoice: INV${String(lastInvoiceNumber).padStart(6, "0")}</p>
+            </div>
+            
+            <div class="items">
+                ${cart
+                  .map(
+                    (item) => `
+                    <div class="item">
+                        <span>${item.name}</span>
+                    </div>
+                    <div class="item">
+                        <span>${
+                          item.quantity
+                        } x Rs.${item.price.toLocaleString()}</span>
+                        <span>Rs.${item.total.toLocaleString()}</span>
+                    </div>
+                `
+                  )
+                  .join("")}
+            </div>
+            
+            <div class="total">
+                <div class="item">
+                    <span>TOTAL:</span>
+                    <span>Rs.${total.toLocaleString()}</span>
+                </div>
+                ${
+                  currentPaymentMethod === "cash"
+                    ? `
+                    <div class="item">
+                        <span>Cash Received:</span>
+                        <span>Rs.${parseFloat(
+                          document.getElementById("cash-received").value || 0
+                        ).toLocaleString()}</span>
+                    </div>
+                    <div class="item">
+                        <span>Change:</span>
+                        <span>Rs.${Math.max(
+                          0,
+                          parseFloat(
+                            document.getElementById("cash-received").value || 0
+                          ) - total
+                        ).toLocaleString()}</span>
+                    </div>
+                `
+                    : ""
+                }
+            </div>
+            
+            <div class="center" style="margin-top: 20px;">
+                <p>Thank you for your business!</p>
+                <p>Visit us again</p>
+            </div>
+        </body>
+        </html>
+    `);
+
+  receiptWindow.document.close();
+  receiptWindow.print();
+}
+
+// New sale
+function newSale() {
+  document.getElementById("payment-success-modal").classList.add("hidden");
+  clearCart();
+
+  // Reload products to reflect updated stock
+  loadProducts();
+}
+
+// Show keyboard shortcuts
+function showKeyboardShortcuts() {
+  document.getElementById("shortcuts-modal").classList.remove("hidden");
+}
+
+// Close shortcuts modal
+function closeShortcutsModal() {
+  document.getElementById("shortcuts-modal").classList.add("hidden");
+}
+
+// Show notification
+function showNotification(message, type = "info") {
+  // Create notification element
+  const notification = document.createElement("div");
+  notification.className = `pos-notification fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white text-sm font-medium shadow-lg`;
+
+  // Set color based on type
+  switch (type) {
+    case "success":
+      notification.classList.add("bg-green-500");
+      break;
+    case "error":
+      notification.classList.add("bg-red-500");
+      break;
+    case "warning":
+      notification.classList.add("bg-yellow-500");
+      break;
+    default:
+      notification.classList.add("bg-blue-500");
+  }
+
+  notification.textContent = message;
+
+  // Add to DOM
+  document.body.appendChild(notification);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = "slideInRight 0.3s ease-out reverse";
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Logout function
+function logout() {
+  if (confirm("Are you sure you want to logout?")) {
+    // Clear session storage
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("user");
+
+    // Show notification and redirect
+    showNotification("Logged out successfully", "info");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 1000);
+  }
+}
+
+// Navigate to dashboard (with role checking)
+function goToDashboard() {
+  const userInfo = sessionStorage.getItem("user");
+
+  try {
+    const user = JSON.parse(userInfo);
+    const role = user.role ? user.role.toLowerCase() : "";
+
+    // Cashiers stay on POS, but we can allow them to access dashboard if needed
+    if (role === "cashier") {
+      if (
+        confirm(
+          "You are logged in as a cashier. Are you sure you want to go to the main dashboard?"
+        )
+      ) {
+        window.location.href = "Dashboard.html";
+      }
+    } else {
+      window.location.href = "Dashboard.html";
+    }
+  } catch (e) {
+    // If we can't parse user info, just go to dashboard
+    window.location.href = "Dashboard.html";
+  }
+}
+
+// Check if user has permission for certain actions
+function hasPermission(action) {
+  const userInfo = sessionStorage.getItem("user");
+
+  try {
+    const user = JSON.parse(userInfo);
+    const role = user.role ? user.role.toLowerCase() : "";
+
+    // Define permissions based on role
+    const permissions = {
+      admin: ["all"],
+      administrator: ["all"],
+      manager: ["pos", "reports", "customers", "inventory_view"],
+      cashier: ["pos", "customers_add"],
+      accountant: ["reports", "pos_view"],
+    };
+
+    const userPermissions = permissions[role] || [];
+    return userPermissions.includes("all") || userPermissions.includes(action);
+  } catch (e) {
+    // If we can't determine permissions, allow basic POS operations
+    return ["pos", "customers_add"].includes(action);
+  }
+}
+
+// Initialize payment method on load
+document.addEventListener("DOMContentLoaded", function () {
+  selectPaymentMethod("cash");
+});
+
+// ==================== REPAIR MANAGEMENT FUNCTIONS ====================
+
+// Sample repair data (integrated from repairs.js)
+let repairOrders = [
+  {
+    id: "RP-2024-001",
+    customer: "Nimal Fernando",
+    phone: "+94 77 123 4567",
+    device: "iPhone 13 Pro",
+    brand: "Apple",
+    issue: "Screen Replacement",
+    status: "In Progress",
+    estimatedCost: 25000,
+    priority: "High",
+    dateReceived: "2024-11-20",
+    technician: "Kasun Silva",
+  },
+  {
+    id: "RP-2024-002",
+    customer: "Saman Perera",
+    phone: "+94 71 987 6543",
+    device: "Samsung Galaxy S23",
+    brand: "Samsung",
+    issue: "Battery Replacement",
+    status: "Completed",
+    estimatedCost: 15000,
+    priority: "Medium",
+    dateReceived: "2024-11-18",
+    technician: "Nuwan Kumara",
+  },
+  {
+    id: "RP-2024-003",
+    customer: "Kamala Silva",
+    phone: "+94 70 456 7890",
+    device: "iPhone 12",
+    brand: "Apple",
+    issue: "Water Damage",
+    status: "Pending",
+    estimatedCost: 35000,
+    priority: "Urgent",
+    dateReceived: "2024-11-21",
+    technician: "Pradeep Ranasinghe",
+  },
+  {
+    id: "RP-2024-004",
+    customer: "Ruwan Jayasekara",
+    phone: "+94 76 234 5678",
+    device: "Huawei P30",
+    brand: "Huawei",
+    issue: "Charging Port Repair",
+    status: "Pending",
+    estimatedCost: 8000,
+    priority: "Low",
+    dateReceived: "2024-11-19",
+    technician: "Kasun Silva",
+  },
+];
+
+// Show repairs modal
+function showRepairsModal() {
+  document.getElementById("repairsModal").classList.remove("hidden");
+  loadRepairsTable();
+  // Re-initialize feather icons for the modal
+  setTimeout(() => feather.replace(), 100);
+}
+
+// Close repairs modal
+function closeRepairsModal() {
+  document.getElementById("repairsModal").classList.add("hidden");
+}
+
+// Show add repair modal
+function showAddRepairModal() {
+  document.getElementById("addRepairModal").classList.remove("hidden");
+  // Clear form
+  document.getElementById("repairCustomerName").value = "";
+  document.getElementById("repairCustomerPhone").value = "";
+  document.getElementById("repairDeviceModel").value = "";
+  document.getElementById("repairDeviceBrand").value = "";
+  document.getElementById("repairIssue").value = "";
+  document.getElementById("repairEstimatedCost").value = "";
+  document.getElementById("repairPriority").value = "Medium";
+  // Re-initialize feather icons for the modal
+  setTimeout(() => feather.replace(), 100);
+}
+
+// Close add repair modal
+function closeAddRepairModal() {
+  document.getElementById("addRepairModal").classList.add("hidden");
+}
+
+// Load repairs table
+function loadRepairsTable() {
+  const tbody = document.getElementById("repairsTableBody");
+  tbody.innerHTML = "";
+
+  repairOrders.forEach((repair) => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-gray-50";
+
+    // Status badge styling
+    let statusClass = "bg-gray-100 text-gray-800";
+    switch (repair.status.toLowerCase()) {
+      case "completed":
+        statusClass = "bg-green-100 text-green-800";
+        break;
+      case "in progress":
+        statusClass = "bg-blue-100 text-blue-800";
+        break;
+      case "pending":
+        statusClass = "bg-yellow-100 text-yellow-800";
+        break;
+      case "cancelled":
+        statusClass = "bg-red-100 text-red-800";
+        break;
+    }
+
+    row.innerHTML = `
+            <td class="px-4 py-3 text-sm font-medium text-gray-900">${
+              repair.id
+            }</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${
+              repair.customer
+            }<br><span class="text-xs text-gray-500">${repair.phone}</span></td>
+            <td class="px-4 py-3 text-sm text-gray-700">${repair.brand} ${
+      repair.device
+    }</td>
+            <td class="px-4 py-3 text-sm text-gray-700">${repair.issue}</td>
+            <td class="px-4 py-3">
+                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClass}">
+                    ${repair.status}
+                </span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-700">₹${repair.estimatedCost.toLocaleString()}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">${
+              repair.dateReceived
+            }</td>
+            <td class="px-4 py-3 text-sm">
+                <div class="flex space-x-2">
+                    <button onclick="editRepair('${
+                      repair.id
+                    }')" class="text-blue-600 hover:text-blue-800 p-1" title="Edit">
+                        <i data-feather="edit-2" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="updateRepairStatus('${
+                      repair.id
+                    }')" class="text-green-600 hover:text-green-800 p-1" title="Update Status">
+                        <i data-feather="check-circle" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="deleteRepair('${
+                      repair.id
+                    }')" class="text-red-600 hover:text-red-800 p-1" title="Delete">
+                        <i data-feather="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </td>
+        `;
+
+    tbody.appendChild(row);
+  });
+
+  // Re-initialize feather icons
+  feather.replace();
+}
+
+// Add new repair
+function addRepair() {
+  const customerName = document
+    .getElementById("repairCustomerName")
+    .value.trim();
+  const customerPhone = document
+    .getElementById("repairCustomerPhone")
+    .value.trim();
+  const deviceModel = document.getElementById("repairDeviceModel").value.trim();
+  const deviceBrand = document.getElementById("repairDeviceBrand").value;
+  const issue = document.getElementById("repairIssue").value.trim();
+  const estimatedCost =
+    parseFloat(document.getElementById("repairEstimatedCost").value) || 0;
+  const priority = document.getElementById("repairPriority").value;
+
+  // Validation
+  if (
+    !customerName ||
+    !customerPhone ||
+    !deviceModel ||
+    !deviceBrand ||
+    !issue
+  ) {
+    showNotification("Please fill in all required fields", "error");
+    return;
+  }
+
+  // Generate new repair ID
+  const newId = `RP-2024-${String(repairOrders.length + 1).padStart(3, "0")}`;
+
+  // Create new repair object
+  const newRepair = {
+    id: newId,
+    customer: customerName,
+    phone: customerPhone,
+    device: deviceModel,
+    brand: deviceBrand,
+    issue: issue,
+    status: "Pending",
+    estimatedCost: estimatedCost,
+    priority: priority,
+    dateReceived: new Date().toISOString().split("T")[0],
+    technician: "Unassigned",
+  };
+
+  // Add to repairs array
+  repairOrders.push(newRepair);
+
+  // Refresh table
+  loadRepairsTable();
+
+  // Close modal and show success
+  closeAddRepairModal();
+  showNotification(`Repair order ${newId} created successfully`, "success");
+}
+
+// Search repairs
+function searchRepairs() {
+  const searchTerm = document
+    .getElementById("repairSearchInput")
+    .value.toLowerCase();
+  filterRepairs(searchTerm);
+}
+
+// Filter repairs by status
+function filterRepairsByStatus() {
+  const statusFilter = document.getElementById("statusFilter").value;
+  const searchTerm = document
+    .getElementById("repairSearchInput")
+    .value.toLowerCase();
+  filterRepairs(searchTerm, statusFilter);
+}
+
+// Filter repairs function
+function filterRepairs(searchTerm = "", statusFilter = "") {
+  const tbody = document.getElementById("repairsTableBody");
+  const rows = tbody.querySelectorAll("tr");
+
+  rows.forEach((row) => {
+    const text = row.textContent.toLowerCase();
+    const statusText = row.querySelector(".rounded-full").textContent.trim();
+
+    const matchesSearch = !searchTerm || text.includes(searchTerm);
+    const matchesStatus =
+      !statusFilter ||
+      statusText.toLowerCase().includes(statusFilter.toLowerCase());
+
+    if (matchesSearch && matchesStatus) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  });
+}
+
+// Edit repair (placeholder function)
+function editRepair(repairId) {
+  showNotification(
+    `Edit functionality for ${repairId} will be implemented`,
+    "info"
+  );
+}
+
+// Update repair status (placeholder function)
+function updateRepairStatus(repairId) {
+  const repair = repairOrders.find((r) => r.id === repairId);
+  if (repair) {
+    // Cycle through statuses
+    const statuses = ["Pending", "In Progress", "Completed", "Cancelled"];
+    const currentIndex = statuses.indexOf(repair.status);
+    const nextIndex = (currentIndex + 1) % statuses.length;
+    repair.status = statuses[nextIndex];
+
+    loadRepairsTable();
+    showNotification(
+      `Repair ${repairId} status updated to ${repair.status}`,
+      "success"
+    );
+  }
+}
+
+// Delete repair
+function deleteRepair(repairId) {
+  if (confirm(`Are you sure you want to delete repair ${repairId}?`)) {
+    repairOrders = repairOrders.filter((r) => r.id !== repairId);
+    loadRepairsTable();
+    showNotification(`Repair ${repairId} deleted successfully`, "success");
+  }
+}
+
+// ==================== POS REPAIR FUNCTIONS ====================
+
+// Handle repair search input
+function handleRepairSearch() {
+  filterPOSRepairs();
+}
+
+// Filter repairs in POS (using status filter)
+function filterPOSRepairs() {
+  const searchInput = document.getElementById("repair-search-input");
+  const statusFilterEl = document.getElementById("repair-status-filter");
+
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+  const statusFilter = statusFilterEl ? statusFilterEl.value : "";
+
+  if (!window.currentRepairsData) return;
+
+  const filteredRepairs = window.currentRepairsData.filter((repair) => {
+    const matchesSearch =
+      !searchTerm ||
+      repair.id.toLowerCase().includes(searchTerm) ||
+      repair.device.toLowerCase().includes(searchTerm) ||
+      repair.customer.toLowerCase().includes(searchTerm) ||
+      repair.issue.toLowerCase().includes(searchTerm);
+
+    const matchesStatus = !statusFilter || repair.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  loadPOSRepairs(filteredRepairs);
+}
+
+// View repair details in POS
+function viewPOSRepair(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  const statusLabel = (repair.status || "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
+  const itemsHtml = (repair.items || []).length
+    ? `<ul class="list-disc pl-5">${(repair.items || [])
+        .map(
+          (it) =>
+            `<li>${it.name || "-"} — Price: Rs.${(
+              it.price || 0
+            ).toLocaleString()}</li>`
+        )
+        .join("")}</ul>`
+    : '<p class="text-sm text-gray-500">No items</p>';
+
+  const modalContent = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closePOSRepairDetailsModal()">
+            <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Repair Details - ${
+                      repair.id
+                    }</h2>
+                    <button onclick="closePOSRepairDetailsModal()" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p><strong>Customer:</strong> ${
+                              repair.customer || "-"
+                            }</p>
+                            <p><strong>Phone:</strong> ${
+                              repair.phone || "-"
+                            }</p>
+                            <p><strong>Email:</strong> ${
+                              repair.email || "-"
+                            }</p>
+                        </div>
+                        <div>
+                            <p><strong>Device:</strong> ${
+                              repair.device || "-"
+                            }</p>
+                            <p><strong>IMEI:</strong> ${repair.imei || "-"}</p>
+                            <p><strong>Status:</strong> ${statusLabel}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p><strong>Issue:</strong></p>
+                        <p class="text-sm text-gray-700">${
+                          repair.issue || "-"
+                        }</p>
+                    </div>
+                    <div>
+                        <p><strong>Technician:</strong> ${
+                          repair.technician || "-"
+                        }</p>
+                        <p><strong>Estimated Cost:</strong> Rs.${(
+                          repair.estimatedCost || 0
+                        ).toLocaleString()}</p>
+                        <p><strong>Actual Cost:</strong> Rs.${(
+                          repair.actualCost || 0
+                        ).toLocaleString()}</p>
+                        <p><strong>Received:</strong> ${
+                          repair.receivedDate || "-"
+                        }</p>
+                        <p><strong>Completed:</strong> ${
+                          repair.completedDate || "-"
+                        }</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold">Items</h4>
+                        ${itemsHtml}
+                    </div>
+                    <div>
+                        <p><strong>Notes:</strong></p>
+                        <p class="text-sm text-gray-700">${
+                          repair.notes || "No notes"
+                        }</p>
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button onclick="openPOSRepairInvoice('${
+                          repair.id
+                        }'); closePOSRepairDetailsModal();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            Open Invoice
+                        </button>
+                        <button onclick="closePOSRepairDetailsModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+  // Add modal to page
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "pos-repair-details-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  // Initialize feather icons
+  feather.replace();
+}
+
+// Close repair details modal
+function closePOSRepairDetailsModal() {
+  const modal = document.getElementById("pos-repair-details-modal");
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Edit repair in POS
+function editPOSRepair(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  const modalContent = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closePOSRepairEditModal()">
+            <div class="bg-white rounded-lg p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Edit Repair - ${
+                      repair.id
+                    }</h2>
+                    <button onclick="closePOSRepairEditModal()" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <form onsubmit="savePOSRepairEdit('${
+                  repair.id
+                }'); return false;">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Issue Description</label>
+                            <textarea id="edit-repair-issue" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">${
+                              repair.issue || ""
+                            }</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Estimated Cost (Rs.)</label>
+                            <input type="number" id="edit-repair-cost" value="${
+                              repair.estimatedCost || 0
+                            }" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                            <select id="edit-repair-status" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                                <option value="received" ${
+                                  repair.status === "received" ? "selected" : ""
+                                }>Received</option>
+                                <option value="diagnosing" ${
+                                  repair.status === "diagnosing"
+                                    ? "selected"
+                                    : ""
+                                }>Diagnosing</option>
+                                <option value="repairing" ${
+                                  repair.status === "repairing"
+                                    ? "selected"
+                                    : ""
+                                }>Repairing</option>
+                                <option value="testing" ${
+                                  repair.status === "testing" ? "selected" : ""
+                                }>Testing</option>
+                                <option value="completed" ${
+                                  repair.status === "completed"
+                                    ? "selected"
+                                    : ""
+                                }>Completed</option>
+                                <option value="delivered" ${
+                                  repair.status === "delivered"
+                                    ? "selected"
+                                    : ""
+                                }>Delivered</option>
+                                <option value="pending_parts" ${
+                                  repair.status === "pending_parts"
+                                    ? "selected"
+                                    : ""
+                                }>Pending Parts</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Technician</label>
+                            <input type="text" id="edit-repair-technician" value="${
+                              repair.technician || ""
+                            }" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                            <textarea id="edit-repair-notes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">${
+                              repair.notes || ""
+                            }</textarea>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-2 mt-6">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            Save Changes
+                        </button>
+                        <button type="button" onclick="closePOSRepairEditModal()" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+
+  // Add modal to page
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "pos-repair-edit-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  // Initialize feather icons
+  feather.replace();
+}
+
+// Save repair edit
+function savePOSRepairEdit(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  // Update repair data
+  repair.issue = document.getElementById("edit-repair-issue").value;
+  repair.estimatedCost =
+    parseFloat(document.getElementById("edit-repair-cost").value) || 0;
+  repair.status = document.getElementById("edit-repair-status").value;
+  repair.technician = document.getElementById("edit-repair-technician").value;
+  repair.notes = document.getElementById("edit-repair-notes").value;
+
+  // If status is completed, set completion date
+  if (repair.status === "completed" && !repair.completedDate) {
+    repair.completedDate = new Date().toISOString().split("T")[0];
+  }
+
+  closePOSRepairEditModal();
+  loadPOSRepairs(); // Refresh the repairs table
+  showNotification(`Repair ${repairId} updated successfully`, "success");
+}
+
+// Close repair edit modal
+function closePOSRepairEditModal() {
+  const modal = document.getElementById("pos-repair-edit-modal");
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Open repair invoice from POS - Full functionality like repairs.js
+function openPOSRepairInvoice(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  // Ensure mock repair products exist
+  ensureMockRepairProducts();
+
+  // Ensure repair has items array
+  if (!repair.items) {
+    repair.items = [];
+  }
+
+  const modalContent = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closePOSRepairInvoiceModal()">
+            <div class="bg-white rounded-lg p-6 max-w-5xl w-full mx-4 max-h-[90vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                    <h2 class="text-xl font-bold text-gray-800">Repair Invoice - ${repair.id}</h2>
+                    <button onclick="closePOSRepairInvoiceModal()" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div id="pos-repair-invoice-content" class="flex-1 overflow-y-auto">
+                    <!-- Content will be populated by renderPOSRepairInvoice -->
+                </div>
+                
+                <div class="flex justify-between items-center p-4 border-t bg-white flex-shrink-0">
+                    <div class="text-sm text-gray-600" id="pos-repair-invoice-totals">Totals: Cost Rs.0 | Pricing Rs.0</div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="handleUpdatePOSRepairInvoice('${repair.id}')" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update & Save Changes</button>
+                        <button type="button" onclick="printPOSRepairInvoice('${repair.id}')" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Print</button>
+                        <button type="button" onclick="finalizeRepairInvoice('${repair.id}')" class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600">Finalize & Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+  // Add modal to page
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "pos-repair-invoice-modal";
+  modalDiv.dataset.repairId = repairId;
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  // Render the invoice content
+  renderPOSRepairInvoice(repair);
+
+  // Initialize feather icons
+  feather.replace();
+}
+
+// Ensure mock repair products exist
+function ensureMockRepairProducts() {
+  if (!window.productsData || window.productsData.length === 0) {
+    window.productsData = [
+      {
+        id: "rm-001",
+        name: "iPhone 13 Display (Replacement Part)",
+        cost: 22000,
+        price: 25000,
+        category: "repair-parts",
+      },
+      {
+        id: "rm-002",
+        name: "Samsung Galaxy S23 Battery",
+        cost: 12000,
+        price: 14500,
+        category: "repair-parts",
+      },
+      {
+        id: "rm-003",
+        name: "iPhone Screen Protector",
+        cost: 500,
+        price: 800,
+        category: "accessories",
+      },
+      {
+        id: "rm-004",
+        name: "Phone Cleaning Service",
+        cost: 200,
+        price: 500,
+        category: "services",
+      },
+      {
+        id: "rm-005",
+        name: "Charging Port Repair Kit",
+        cost: 3000,
+        price: 5000,
+        category: "repair-parts",
+      },
+      {
+        id: "rm-006",
+        name: "Water Damage Treatment",
+        cost: 1500,
+        price: 3000,
+        category: "services",
+      },
+    ];
+  }
+}
+
+// Render repair invoice content
+function renderPOSRepairInvoice(repair) {
+  if (!repair.items) repair.items = [];
+
+  const rows = repair.items
+    .map((item, idx) => buildPOSInvoiceRow(idx + 1, item))
+    .join("");
+
+  const html = `
+    <div class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-gray-50 p-4 rounded">
+          <h3 class="font-semibold text-gray-800 mb-2">Customer</h3>
+          <p class="text-sm"><strong>Name:</strong> ${
+            repair.customer || "-"
+          }</p>
+          <p class="text-sm"><strong>Phone:</strong> ${repair.phone || "-"}</p>
+          <p class="text-sm"><strong>Email:</strong> ${repair.email || "-"}</p>
+        </div>
+        <div class="bg-gray-50 p-4 rounded">
+          <h3 class="font-semibold text-gray-800 mb-2">Device</h3>
+          <p class="text-sm"><strong>Model:</strong> ${repair.device || "-"}</p>
+          <p class="text-sm"><strong>IMEI:</strong> ${repair.imei || "-"}</p>
+          <p class="text-sm"><strong>Issue:</strong> ${repair.issue || "-"}</p>
+        </div>
+      </div>
+      <div>
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-lg font-medium text-gray-900">Items / Materials</h3>
+          <button type="button" onclick="addPOSRepairInvoiceRow()" class="px-3 py-1.5 text-sm rounded bg-blue-600 text-white">Add Item</button>
+        </div>
+        <div class="overflow-x-auto border border-gray-200 rounded-lg">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-3 py-2 text-left">#</th>
+                <th class="px-3 py-2 text-left">Item</th>
+                <th class="px-3 py-2 text-left">Cost (Rs.)</th>
+                <th class="px-3 py-2 text-left">Pricing (Rs.)</th>
+                <th class="px-3 py-2"></th>
+              </tr>
+            </thead>
+            <tbody id="pos-repair-invoice-items-body">${
+              rows ||
+              '<tr><td colspan="5" class="px-3 py-4 text-center text-gray-500">No items added</td></tr>'
+            }</tbody>
+            <tfoot class="bg-gray-50">
+              <tr>
+                <td colspan="2" class="px-3 py-2 font-medium">Totals</td>
+                <td class="px-3 py-2" id="pos-invoice-total-cost">0</td>
+                <td class="px-3 py-2">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-gray-500 text-sm">Rs.</span>
+                    <input type="number" id="pos-invoice-total-price-editable" step="0.01" min="0" 
+                      class="w-24 px-2 py-1 border border-gray-300 rounded text-right font-semibold text-blue-600" />
+                    <span id="pos-invoice-total-price" class="hidden">0</span>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById("pos-repair-invoice-content").innerHTML = html;
+  recalcPOSInvoiceTotals();
+  feather.replace();
+}
+
+// Build invoice row
+function buildPOSInvoiceRow(lineNo, item) {
+  return `<tr data-line="${lineNo}">
+    <td class="px-3 py-2">${lineNo}</td>
+    <td class="px-3 py-2">
+      <div class="relative">
+        <input type="text" class="pos-invoice-item-input w-full border border-gray-300 rounded px-2 py-1 text-sm" 
+               value="${item.name || ""}" placeholder="Search or type item..." 
+               oninput="handlePOSInvoiceItemInput(this)" />
+        <div class="pos-invoice-item-results absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded shadow-lg max-h-40 overflow-y-auto hidden z-10"></div>
+      </div>
+    </td>
+    <td class="px-3 py-2">
+      <input type="number" class="pos-invoice-cost-input w-24 border border-gray-300 rounded px-2 py-1 text-sm" 
+             value="${
+               item.cost || 0
+             }" min="0" oninput="recalcPOSInvoiceTotals()" />
+    </td>
+    <td class="px-3 py-2">
+      <input type="number" class="pos-invoice-price-input w-24 rounded px-2 py-1 text-sm" 
+             style="border:2px solid #16a34a" value="${
+               item.price || 0
+             }" min="0" oninput="recalcPOSInvoiceTotals()" />
+    </td>
+    <td class="px-3 py-2 text-right">
+      <button type="button" onclick="removePOSInvoiceRow(${lineNo})" class="text-red-600 hover:text-red-800">
+        <i data-feather="trash" class="w-4 h-4"></i>
+      </button>
+    </td>
+  </tr>`;
+}
+
+// Add repair invoice row
+function addPOSRepairInvoiceRow() {
+  const tbody = document.getElementById("pos-repair-invoice-items-body");
+  if (!tbody) return;
+
+  if (
+    tbody.children.length === 1 &&
+    tbody.children[0].querySelector("td[colspan]")
+  ) {
+    tbody.innerHTML = "";
+  }
+
+  const lineNo = tbody.children.length + 1;
+  const tempItem = {
+    name: "",
+    cost: 0,
+    price: 0,
+    productId: null,
+    isProduct: false,
+  };
+  tbody.insertAdjacentHTML("beforeend", buildPOSInvoiceRow(lineNo, tempItem));
+  feather.replace();
+  recalcPOSInvoiceTotals();
+}
+
+// Remove invoice row
+function removePOSInvoiceRow(lineNo) {
+  const tbody = document.getElementById("pos-repair-invoice-items-body");
+  if (!tbody) return;
+
+  const row = Array.from(tbody.children).find((r) => r.dataset.line == lineNo);
+  if (row) row.remove();
+
+  // Renumber rows
+  Array.from(tbody.children).forEach((r, idx) => {
+    r.dataset.line = idx + 1;
+    r.querySelector("td:first-child").textContent = idx + 1;
+  });
+
+  recalcPOSInvoiceTotals();
+}
+
+// Handle invoice item input
+function handlePOSInvoiceItemInput(inputEl) {
+  const query = inputEl.value.trim().toLowerCase();
+  const resultsEl = inputEl.parentElement.querySelector(
+    ".pos-invoice-item-results"
+  );
+
+  if (!query) {
+    resultsEl.classList.add("hidden");
+    return;
+  }
+
+  const matches = (window.productsData || [])
+    .filter((p) => p.name && p.name.toLowerCase().includes(query))
+    .slice(0, 10);
+
+  if (matches.length === 0) {
+    resultsEl.innerHTML =
+      '<div class="px-2 py-1 text-sm text-gray-500">No matches</div>';
+    resultsEl.classList.remove("hidden");
+    return;
+  }
+
+  resultsEl.innerHTML = matches
+    .map(
+      (p) =>
+        `<div class="px-2 py-1 hover:bg-blue-50 cursor-pointer text-sm" 
+              onclick="selectPOSInvoiceProduct(this, '${p.id}', '${(
+          p.name || ""
+        ).replace(/'/g, "&#39;")}', ${p.cost || 0}, ${p.price || 0})">
+           ${p.name}
+         </div>`
+    )
+    .join("");
+  resultsEl.classList.remove("hidden");
+}
+
+// Select invoice product
+function selectPOSInvoiceProduct(el, productId, name, cost, price) {
+  const resultsEl = el.parentElement;
+  const wrapper = resultsEl.parentElement;
+  const inputEl = wrapper.querySelector(".pos-invoice-item-input");
+
+  inputEl.value = name;
+  resultsEl.classList.add("hidden");
+
+  const row = wrapper.closest("tr");
+  row.dataset.productId = productId;
+  row.dataset.isProduct = "true";
+
+  const costInput = row.querySelector(".pos-invoice-cost-input");
+  const priceInput = row.querySelector(".pos-invoice-price-input");
+
+  costInput.value = cost;
+  priceInput.value = price;
+  recalcPOSInvoiceTotals();
+}
+
+// Recalculate invoice totals
+function recalcPOSInvoiceTotals() {
+  const tbody = document.getElementById("pos-repair-invoice-items-body");
+  let totalCost = 0,
+    totalPrice = 0;
+
+  if (tbody) {
+    Array.from(tbody.children).forEach((row) => {
+      if (!row.querySelector("td[colspan]")) {
+        const costInput = row.querySelector(".pos-invoice-cost-input");
+        const priceInput = row.querySelector(".pos-invoice-price-input");
+        if (costInput && priceInput) {
+          totalCost += parseFloat(costInput.value) || 0;
+          totalPrice += parseFloat(priceInput.value) || 0;
+        }
+      }
+    });
+  }
+
+  const costEl = document.getElementById("pos-invoice-total-cost");
+  const priceEl = document.getElementById("pos-invoice-total-price");
+  const priceEditableEl = document.getElementById(
+    "pos-invoice-total-price-editable"
+  );
+
+  if (costEl) costEl.textContent = totalCost.toLocaleString();
+  if (priceEl) priceEl.textContent = totalPrice.toLocaleString();
+  if (priceEditableEl) priceEditableEl.value = totalPrice.toFixed(2);
+
+  const summary = document.getElementById("pos-repair-invoice-totals");
+  if (summary)
+    summary.textContent = `Totals: Cost Rs.${totalCost.toLocaleString()} | Pricing Rs.${totalPrice.toLocaleString()}`;
+}
+
+// Update repair invoice
+function handleUpdatePOSRepairInvoice(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) return;
+
+  const tbody = document.getElementById("pos-repair-invoice-items-body");
+  const items = [];
+
+  if (tbody) {
+    Array.from(tbody.children).forEach((row, index) => {
+      if (!row.querySelector("td[colspan]")) {
+        const nameInput = row.querySelector(".pos-invoice-item-input");
+        const costInput = row.querySelector(".pos-invoice-cost-input");
+        const priceInput = row.querySelector(".pos-invoice-price-input");
+
+        if (nameInput && costInput && priceInput && nameInput.value.trim()) {
+          items.push({
+            lineNo: index + 1,
+            name: nameInput.value.trim(),
+            cost: parseFloat(costInput.value) || 0,
+            price: parseFloat(priceInput.value) || 0,
+            productId: row.dataset.productId || null,
+            isProduct: row.dataset.isProduct === "true",
+          });
+        }
+      }
+    });
+  }
+
+  repair.items = items;
+
+  // Update estimated cost based on editable total price if available
+  const priceEditableEl = document.getElementById(
+    "pos-invoice-total-price-editable"
+  );
+  const totalPrice = priceEditableEl
+    ? parseFloat(priceEditableEl.value) || 0
+    : items.reduce((sum, item) => sum + item.price, 0);
+  if (totalPrice > 0) {
+    repair.estimatedCost = totalPrice;
+  }
+
+  // Add repair to cart with updated total
+  addRepairToCart(repairId);
+
+  // Close modal
+  closePOSRepairInvoiceModal();
+
+  recalcPOSInvoiceTotals();
+  showNotification("Repair added to invoice", "success");
+}
+
+// Close repair invoice modal
+function closePOSRepairInvoiceModal() {
+  const modal = document.getElementById("pos-repair-invoice-modal");
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Finalize repair invoice and add to cart
+function finalizeRepairInvoice(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  // Update invoice before finalizing
+  handleUpdatePOSRepairInvoice(repairId);
+
+  // Calculate total
+  const total = (repair.items || []).reduce(
+    (sum, item) => sum + (parseFloat(item.price) || 0),
+    0
+  );
+
+  if (total <= 0) {
+    showNotification("Please add items with valid prices", "error");
+    return;
+  }
+
+  // Add to cart
+  const cartItem = {
+    id: `repair_${repairId}`,
+    name: `Repair: ${repair.device} - ${repair.issue}`,
+    type: "repair",
+    repairId: repairId,
+    customer: repair.customer || "",
+    phone: repair.phone || "",
+    device: repair.device || "",
+    imei: repair.imei || "",
+    issue: repair.issue || "",
+    items: repair.items || [],
+    price: total,
+    quantity: 1,
+    totalPrice: total,
+  };
+
+  // Check if already in cart
+  const existingIndex = cart.findIndex((item) => item.id === cartItem.id);
+  if (existingIndex !== -1) {
+    cart[existingIndex] = cartItem; // Update existing
+    showNotification("Repair invoice updated in cart", "success");
+  } else {
+    cart.push(cartItem);
+    showNotification("Repair invoice added to cart", "success");
+  }
+
+  updateCartDisplay();
+  closePOSRepairInvoiceModal();
+}
+
+// View repair invoice from cart
+function viewRepairInvoice(repairId) {
+  openPOSRepairInvoice(repairId);
+}
+
+// Print repair invoice
+function printPOSRepairInvoice(repairId) {
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) return;
+
+  // Update invoice before printing
+  handleUpdatePOSRepairInvoice(repairId);
+
+  const printWindow = window.open("", "_blank");
+  const total = (repair.items || []).reduce(
+    (sum, it) => sum + (parseFloat(it.price) || 0),
+    0
+  );
+  const rowsHtml = (repair.items || [])
+    .map(
+      (item) =>
+        `<tr><td>${item.lineNo}</td><td>${
+          item.name
+        }</td><td class="pricing-cell">${parseFloat(
+          item.price
+        ).toLocaleString()}</td></tr>`
+    )
+    .join("");
+
+  printWindow.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Repair Invoice - ${repair.id}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:24px;font-size:12px;}
+    h1{font-size:18px;margin:0 0 12px;font-weight:600;}
+    table{width:100%;border-collapse:collapse;margin-top:12px;}
+    th,td{border:1px solid #ccc;padding:6px;text-align:left;}
+    th{background:#f5f5f5;}
+    .pricing-cell{text-align:right;}
+  </style>
+</head>
+<body>
+  <h1>Repair Invoice - ${repair.id}</h1>
+  <table>
+    <tr><th>Customer</th><td>${repair.customer || "-"}</td></tr>
+    <tr><th>Phone</th><td>${repair.phone || "-"}</td></tr>
+    <tr><th>Device</th><td>${repair.device || "-"}</td></tr>
+    <tr><th>IMEI</th><td>${repair.imei || "-"}</td></tr>
+    <tr><th>Issue</th><td>${repair.issue || "-"}</td></tr>
+  </table>
+  
+  <table>
+    <thead>
+      <tr><th>#</th><th>Item</th><th>Pricing (Rs.)</th></tr>
+    </thead>
+    <tbody>
+      ${
+        rowsHtml ||
+        '<tr><td colspan="3" style="text-align:center;color:#666;">No items</td></tr>'
+      }
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2" style="font-weight:600">Total</td><td style="font-weight:600;text-align:right">${total.toLocaleString()}</td></tr>
+    </tfoot>
+  </table>
+  
+  <div style="text-align:right;font-weight:600;margin-top:6px;">Total: Rs.${total.toLocaleString()}</div>
+</body>
+</html>`);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+}
+
+// Finalize repair invoice and add to cart
+function finalizeRepairInvoice(repairId) {
+  closePOSRepairInvoiceModal();
+  addRepairToCart(repairId);
+}
+
+// Add repair to cart
+function addRepairToCart(repairId) {
+  // Get repair data from global repairs data
+  const repairsData = window.currentRepairsData || [];
+  const repair = repairsData.find((r) => r.id === repairId);
+  if (!repair) {
+    showNotification("Repair not found", "error");
+    return;
+  }
+
+  // Check if repair is already in cart
+  const existingItem = cart.find(
+    (item) => item.type === "repair" && item.repairId === repairId
+  );
+  if (existingItem) {
+    showNotification("Repair already added to cart", "warning");
+    return;
+  }
+
+  // Create cart item for repair
+  const cartItem = {
+    id: `repair_${repairId}`,
+    type: "repair",
+    repairId: repairId,
+    name: `Repair: ${repair.device} - ${repair.issue}`,
+    price: repair.estimatedCost || repair.actualCost || 0,
+    quantity: 1,
+    customer: repair.customer,
+    phone: repair.phone,
+    repair: repair, // Store full repair data for invoice generation
+    total: repair.estimatedCost || repair.actualCost || 0,
+    totalPrice: repair.estimatedCost || repair.actualCost || 0,
+  };
+
+  cart.push(cartItem);
+  updateCartDisplay();
+  showNotification(`Repair ${repairId} added to cart`, "success");
+
+  // Auto-select customer if not already selected
+  if (!currentCustomer && repair.customer) {
+    currentCustomer = {
+      name: repair.customer,
+      phone: repair.phone,
+      email: repair.email || "",
+    };
+    document.getElementById("customer-search").value = repair.customer;
+    showNotification(`Customer ${repair.customer} auto-selected`, "info");
+  }
+}
+
+// Add product to cart (for row click)
+function addProductToCart(product) {
+  if (product.stock <= 0) {
+    showNotification("Product is out of stock", "error");
+    return;
+  }
+
+  // Check if product is already in cart
+  const existingItem = cart.find(
+    (item) => item.type === "product" && item.id === product.id
+  );
+  if (existingItem) {
+    // Increase quantity if in stock
+    if (existingItem.quantity < product.stock) {
+      existingItem.quantity++;
+      updateCartDisplay();
+      showNotification(`Increased ${product.name} quantity`, "success");
+    } else {
+      showNotification("Maximum stock quantity reached", "warning");
+    }
+    return;
+  }
+
+  // Add new item to cart
+  const cartItem = {
+    id: product.id,
+    type: "product",
+    name: product.name,
+    price: product.price,
+    quantity: 1,
+    stock: product.stock,
+    product: product, // Store full product data
+  };
+
+  cart.push(cartItem);
+  updateCartDisplay();
+  showNotification(`${product.name} added to cart`, "success");
+}
+
+// View product details popup
+function viewProductDetails(productId) {
+  const product = posProducts.find((p) => p.id === productId);
+  if (!product) {
+    showNotification("Product not found", "error");
+    return;
+  }
+
+  const stockStatus =
+    product.stock > 10
+      ? "In Stock"
+      : product.stock > 0
+      ? "Low Stock"
+      : "Out of Stock";
+  const stockClass =
+    product.stock > 10
+      ? "text-green-600"
+      : product.stock > 0
+      ? "text-yellow-600"
+      : "text-red-600";
+
+  // Create modal content
+  const modalContent = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onclick="closeProductModal()">
+            <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-800">Product Details</h2>
+                    <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700">
+                        <i data-feather="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="space-y-3">
+                    <div>
+                        <span class="font-semibold text-gray-600">Name:</span>
+                        <span class="ml-2 text-gray-800">${product.name}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">SKU:</span>
+                        <span class="ml-2 text-gray-800">${product.sku}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Category:</span>
+                        <span class="ml-2 text-gray-800">${
+                          product.category
+                        }</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Brand:</span>
+                        <span class="ml-2 text-gray-800">${product.brand}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Price:</span>
+                        <span class="ml-2 text-blue-600 font-medium">Rs.${product.price.toLocaleString()}</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Stock:</span>
+                        <span class="ml-2 ${stockClass} font-medium">${stockStatus} (${
+    product.stock
+  } units)</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-gray-600">Barcode:</span>
+                        <span class="ml-2 text-gray-800 font-mono">${
+                          product.barcode
+                        }</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6 flex justify-end space-x-2">
+                    <button onclick="closeProductModal()" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400">
+                        Close
+                    </button>
+                    ${
+                      product.stock > 0
+                        ? `<button onclick="addProductToCart(${JSON.stringify(
+                            product
+                          ).replace(
+                            /"/g,
+                            "&quot;"
+                          )}); closeProductModal();" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Add to Cart
+                        </button>`
+                        : ""
+                    }
+                </div>
+            </div>
+        </div>
+    `;
+
+  // Add modal to page
+  const modalDiv = document.createElement("div");
+  modalDiv.id = "product-modal";
+  modalDiv.innerHTML = modalContent;
+  document.body.appendChild(modalDiv);
+
+  // Initialize feather icons
+  feather.replace();
+}
+
+// Close product modal
+function closeProductModal() {
+  const modal = document.getElementById("product-modal");
+  if (modal) {
+    modal.remove();
+  }
+}
+
+// Refresh repairs list
+function refreshRepairsList() {
+  loadPOSRepairs();
+  showNotification("Repair list refreshed", "success");
+}
+
+// View repair invoice from cart
+function viewRepairInvoice(repairId) {
+  const cartItem = cart.find(
+    (item) => item.type === "repair" && item.repairId === repairId
+  );
+  if (!cartItem || !cartItem.repair) {
+    showNotification("Repair data not found", "error");
+    return;
+  }
+
+  const repair = cartItem.repair;
+
+  // Generate and print repair invoice
+  const printWindow = window.open("", "_blank");
+  const total = repair.estimatedCost || repair.actualCost || 0;
+
+  const itemsHtml = (repair.items || [])
+    .map(
+      (item) =>
+        `<tr><td>${
+          item.name
+        }</td><td class="text-right">₹${item.price.toLocaleString()}</td></tr>`
+    )
+    .join("");
+
+  const html = `
+    <html>
+    <head>
+        <title>Repair Invoice - ${repair.id}</title>
+        <style>
+            body { font-family: Arial, sans-serif; padding: 20px; font-size: 12px; }
+            h1 { font-size: 18px; margin: 0 0 20px; font-weight: 600; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background: #f5f5f5; font-weight: 600; }
+            .text-right { text-align: right; }
+            .total-row { font-weight: 600; background: #f9f9f9; }
+        </style>
+    </head>
+    <body>
+        <h1>Thilina Mobiles - Repair Invoice</h1>
+        <table>
+            <tr><th>Repair ID</th><td>${repair.id}</td></tr>
+            <tr><th>Customer</th><td>${repair.customer}</td></tr>
+            <tr><th>Phone</th><td>${repair.phone}</td></tr>
+            <tr><th>Device</th><td>${repair.device}</td></tr>
+            <tr><th>IMEI</th><td>${repair.imei || "N/A"}</td></tr>
+            <tr><th>Issue</th><td>${repair.issue}</td></tr>
+            <tr><th>Technician</th><td>${repair.technician}</td></tr>
+            <tr><th>Received Date</th><td>${repair.receivedDate}</td></tr>
+            ${
+              repair.completedDate
+                ? `<tr><th>Completed Date</th><td>${repair.completedDate}</td></tr>`
+                : ""
+            }
+        </table>
+        
+        ${
+          (repair.items || []).length > 0
+            ? `
+        <h2 style="margin-top: 25px; font-size: 16px;">Parts & Labor</h2>
+        <table>
+            <thead>
+                <tr><th>Description</th><th class="text-right">Amount</th></tr>
+            </thead>
+            <tbody>
+                ${itemsHtml}
+            </tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td>Total Amount</td>
+                    <td class="text-right">₹${total.toLocaleString()}</td>
+                </tr>
+            </tfoot>
+        </table>
+        `
+            : `
+        <h2 style="margin-top: 25px; font-size: 16px;">Repair Cost</h2>
+        <table>
+            <tr class="total-row">
+                <td>Total Repair Cost</td>
+                <td class="text-right">₹${total.toLocaleString()}</td>
+            </tr>
+        </table>
+        `
+        }
+        
+        <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666;">
+            Thank you for choosing Thilina Mobiles!
+        </div>
+    </body>
+    </html>`;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+  printWindow.print();
+}
+
+// ==================== CUSTOMER SEARCH FUNCTIONALITY ====================
+
+// Handle customer search input
+function handleCartCustomerSearch() {
+  const input = document.getElementById("customer-search");
+  const resultsDiv = document.getElementById("customer-results");
+
+  if (!input || !resultsDiv) {
+    console.error("Customer search elements not found");
+    return;
+  }
+
+  const searchTerm = input.value.toLowerCase().trim();
+
+  if (searchTerm.length < 1) {
+    resultsDiv.innerHTML = "";
+    resultsDiv.classList.add("hidden");
+    return;
+  }
+
+  // Filter customers based on search term
+  const filteredCustomers = customers.filter(
+    (customer) =>
+      customer.name.toLowerCase().includes(searchTerm) ||
+      customer.phone.includes(searchTerm) ||
+      customer.email.toLowerCase().includes(searchTerm)
+  );
+
+  // Display results
+  if (filteredCustomers.length > 0) {
+    resultsDiv.innerHTML = filteredCustomers
+      .map(
+        (customer) => `
+            <div class="customer-result p-2 hover:bg-gray-100 cursor-pointer border-b" 
+                 onclick="selectCustomer(${
+                   customer.id
+                 }, '${customer.name.replace(/'/g, "\\'")}', '${
+          customer.phone
+        }', '${customer.email.replace(/'/g, "\\'")}')">
+                <div class="font-medium text-gray-900">${customer.name}</div>
+                <div class="text-sm text-gray-600">${customer.phone} • ${
+          customer.email
+        }</div>
+            </div>
+        `
+      )
+      .join("");
+    resultsDiv.classList.remove("hidden");
+  } else {
+    resultsDiv.innerHTML =
+      '<div class="p-2 text-gray-500 text-sm">No customers found</div>';
+    resultsDiv.classList.remove("hidden");
+  }
+}
+
+// Select a customer from search results
+function selectCustomer(id, name, phone, email) {
+  document.getElementById("customer-search").value = name;
+  document.getElementById("selected-customer-id").value = id;
+  document.getElementById("customer-results").classList.add("hidden");
+
+  // Update the current sale customer info if needed
+  if (currentSale.customer) {
+    currentSale.customer = { id, name, phone, email };
+  }
+}
+
+// Setup customer search event listener
+document.addEventListener("DOMContentLoaded", function () {
+  const customerSearchInput = document.getElementById("customer-search");
+  if (customerSearchInput) {
+    customerSearchInput.addEventListener("input", handleCustomerSearch);
+
+    // Hide results when clicking outside
+    document.addEventListener("click", function (e) {
+      if (
+        !customerSearchInput.contains(e.target) &&
+        !document.getElementById("customer-results").contains(e.target)
+      ) {
+        document.getElementById("customer-results").classList.add("hidden");
+      }
+    });
+  }
+});

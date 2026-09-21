@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
 export function Navbar() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
@@ -37,6 +39,11 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Hide Navbar completely on full standalone demo routes or admin routes
+  if (pathname?.startsWith("/demos") || pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const navLinks = [
     { href: "#home", label: "Home", id: "home" },
@@ -99,30 +106,20 @@ export function Navbar() {
           aria-label="Toggle menu"
           className="lg:hidden text-2xl text-[hsl(var(--hue),24%,98%)] focus:outline-none p-1"
         >
-          {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
+      </nav>
 
-        {/* Mobile Navigation Menu Drawer */}
-        <div
-          className={`fixed top-0 right-0 h-screen w-[75%] max-w-[320px] bg-[hsla(var(--hue),8%,10%,0.95)] backdrop-blur-2xl p-10 z-[100] transition-transform duration-400 ease-in-out lg:hidden border-l border-[hsl(var(--hue),8%,20%)] ${
-            mobileMenuOpen ? "translate-x-0 shadow-2xl" : "translate-x-full"
-          }`}
-        >
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            aria-label="Close menu"
-            className="absolute top-6 right-6 text-2xl text-[hsl(var(--hue),24%,98%)] p-1"
-          >
-            <X className="w-7 h-7" />
-          </button>
-
-          <ul className="flex flex-col space-y-8 mt-16">
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden bg-[hsl(var(--hue),8%,10%)] border-b border-[hsl(var(--hue),8%,20%)] px-6 py-6 space-y-4">
+          <ul className="space-y-4">
             {navLinks.map((link) => (
               <li key={link.id}>
                 <a
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`text-xl font-semibold transition-colors ${
+                  className={`block text-base font-semibold ${
                     activeSection === link.id
                       ? "text-[hsl(var(--hue),75%,60%)]"
                       : "text-[hsl(var(--hue),24%,98%)]"
@@ -132,18 +129,16 @@ export function Navbar() {
                 </a>
               </li>
             ))}
-            <li className="pt-4">
-              <a
-                href="#contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="btn-bianca w-full text-center py-3 rounded-full text-sm font-semibold"
-              >
-                Contact me
-              </a>
-            </li>
           </ul>
+          <a
+            href="#contact"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block text-center btn-bianca text-sm py-3 px-7 rounded-full bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] font-semibold"
+          >
+            Contact me
+          </a>
         </div>
-      </nav>
+      )}
     </header>
   );
 }

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thilina Mobiles ERP - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="../js/config.js"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6" style="background: linear-gradient(135deg, #042235 0%, #197BBD 100%);">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0 bg-black/20">
+        <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="7" cy="7" r="7"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+    </div>
+
+    <!-- Login Container -->
+    <div class="relative z-10 w-full max-w-md">
+        <!-- Logo and Title -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full shadow-lg mb-4">
+                <img src="../assets/LOGO.png" alt="Thilina Mobiles" class="w-12 h-12 rounded-lg">
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">Thilina Mobiles</h1>
+            <p class="text-blue-200">ERP Management System</p>
+        </div>
+
+        <!-- Login Form -->
+        <div class="card p-8">
+            <form id="loginForm" class="space-y-6">
+                <div id="login-error" class="hidden bg-red-50 border-l-4 border-red-400 text-red-700 p-3 text-sm rounded">
+                    <strong id="login-error-title" class="font-semibold">Login failed.</strong>
+                    <div id="login-error-message">Please check your credentials and try again.</div>
+                </div>
+
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-feather="user" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <input type="text" id="username" name="username" required 
+                               class="input-field w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500"
+                               placeholder="Enter your username">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-feather="lock" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" name="password" required 
+                               class="input-field w-full pl-10 pr-12 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500"
+                               placeholder="Enter your password">
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            <i data-feather="eye" id="eye-icon" class="w-5 h-5 text-gray-400 hover:text-gray-600"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">User Role</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i data-feather="shield" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <select id="role" name="role" required 
+                                class="input-field w-full pl-10 pr-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 appearance-none">
+                            <option value="">Select your role</option>
+                            <option value="admin">Administrator</option>
+                            <option value="manager">Manager</option>
+                            <option value="accountant">Accountant</option>
+                            <option value="cashier">Cashier</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i data-feather="chevron-down" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- demo mode removed: real backend authentication only -->
+
+
+
+                <button type="submit" 
+                        class="w-full btn-primary py-3 px-4 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200">
+                    <span id="login-text">Sign In</span>
+                    <div id="login-spinner" class="hidden">
+                        <div class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Signing In...
+                    </div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-6 text-blue-200 text-sm">
+            <p>&copy; 2024 Thilina Mobiles. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="success-message" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 hidden">
+        <div class="flex items-center">
+            <i data-feather="check-circle" class="w-5 h-5 mr-2"></i>
+            <span>Login successful! Redirecting...</span>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                eyeIcon.setAttribute('data-feather', 'eye-off');
+            } else {
+                passwordField.type = 'password';
+                eyeIcon.setAttribute('data-feather', 'eye');
+            }
+            feather.replace();
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('success-message');
+            message.classList.remove('hidden');
+            message.classList.remove('translate-x-full');
+            setTimeout(() => {
+                message.classList.add('translate-x-full');
+                setTimeout(() => {
+                    message.classList.add('hidden');
+                }, 300);
+            }, 2000);
+        }
+
+        (function() {
+            const API_BASE_URL = window.API_BASE_URL || 'http://localhost:3000/api';
+
+            // Autofill admin demo credentials when Administrator role is selected
+            (function setupAdminAutofill(){
+                const roleElem = document.getElementById('role');
+                const usernameElem = document.getElementById('username');
+                const passwordElem = document.getElementById('password');
+                if (!roleElem || !usernameElem || !passwordElem) return;
+
+                function checkAndFill() {
+                    const selectedText = (roleElem.selectedOptions && roleElem.selectedOptions[0])
+                        ? roleElem.selectedOptions[0].text.toLowerCase()
+                        : '';
+
+                    const selectedRole = (roleElem.value || selectedText || '').toLowerCase();
+                    const credentialsByRole = {
+                        admin: { username: 'admin', password: 'Test@1234' },
+                        administrator: { username: 'admin', password: 'Test@1234' },
+                        manager: { username: 'manager', password: 'Manager@123' },
+                        accountant: { username: 'accountant', password: 'Acct@1234' },
+                        cashier: { username: 'aa', password: 'Aa111111' }
+                    };
+
+                    const creds = credentialsByRole[selectedRole];
+                    if (creds) {
+                        usernameElem.value = creds.username;
+                        passwordElem.value = creds.password;
+                    } else {
+                        // Clear fields for other roles
+                        usernameElem.value = '';
+                        passwordElem.value = '';
+                    }
+                }
+
+                roleElem.addEventListener('change', checkAndFill);
+                // Run once on setup in case the role is pre-selected
+                checkAndFill();
+            })();
+
+            async function performBackendLogin(username, password, roleValue, roleLabel) {
+                try {
+                    // roleName is enough for backend validation (login does not require /user-roles)
+                    const payload = { username, password, roleName: roleLabel || roleValue };
+
+                    const res = await fetch(`${API_BASE_URL}/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!res.ok) {
+                        // return the parsed body if available and log it for debugging
+                        let body = null;
+                        try { body = await res.json(); } catch (e) { /* ignore */ }
+                        console.error('Login failed response body:', body);
+                        return { success: false, status: res.status, message: (body && (body.message || body.error)) || res.statusText };
+                    }
+
+                    const body = await res.json();
+                    // Expected shape: { success: true, data: { token, user } }
+                    if (body && body.success && body.data && body.data.token) {
+                        return { success: true, token: body.data.token, user: body.data.user };
+                    }
+
+                    return { success: false, message: 'Invalid login response' };
+                } catch (error) {
+                    return { success: false, message: error.message };
+                }
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                const roleSelect = document.getElementById('role');
+                const roleValue = roleSelect ? roleSelect.value : '';
+                const roleText = roleSelect ? roleSelect.selectedOptions[0].text : '';
+
+                document.getElementById('login-text').classList.add('hidden');
+                document.getElementById('login-spinner').classList.remove('hidden');
+
+                // Perform real backend login only
+                const result = await performBackendLogin(username, password, roleValue, roleText);
+
+                if (result.success && result.token) {
+                    // Save token and optionally user
+                    sessionStorage.setItem('authToken', result.token);
+                    sessionStorage.setItem('user', JSON.stringify(result.user || { username, role: roleText }));
+                    showSuccessMessage();
+                    setTimeout(() => {
+                        // Redirect based on user role
+                        if ((roleSelect && roleSelect.value) === 'cashier') {
+                            // Redirect cashiers directly to POS system
+                            window.location.href = 'pos.html';
+                        } else {
+                            // All other roles go to main dashboard
+                            window.location.href = 'Dashboard.html';
+                        }
+                    }, 800);
+                    return;
+                }
+
+                // Backend login failed — show an error and keep the user on the login page
+                // show inline error, clear password and focus for retry
+                document.getElementById('login-text').classList.remove('hidden');
+                document.getElementById('login-spinner').classList.add('hidden');
+                const errBox = document.getElementById('login-error');
+                const errMsg = document.getElementById('login-error-message');
+                const errTitle = document.getElementById('login-error-title');
+                errTitle.textContent = result.status === 401 ? 'Incorrect credentials.' : 'Login failed.';
+                errMsg.textContent = result.message || 'Incorrect username, password, or role. Please try again.';
+                errBox.classList.remove('hidden');
+                // clear username and password and focus username for retry
+                try { document.getElementById('password').value = ''; document.getElementById('username').value = ''; document.getElementById('username').focus(); } catch (e) {}
+            });
+        })();
+
+    // No demo autofill — login uses real backend only
+    </script>
+</body>
+</html>

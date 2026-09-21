@@ -1,14 +1,23 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Github, Linkedin, Facebook } from "lucide-react";
 
 export function Footer() {
+  const pathname = usePathname();
   const githubUrl = process.env.NEXT_PUBLIC_GITHUB_URL || "https://github.com/induwara-dissanayake";
   const linkedinUrl = process.env.NEXT_PUBLIC_LINKEDIN_URL || "https://www.linkedin.com/in/induwara-dissanayake-383388321/";
   const facebookUrl = process.env.NEXT_PUBLIC_FACEBOOK_URL || "https://web.facebook.com/isuru.isuru.1069020/";
 
+  // Hide Footer on standalone demo routes and admin panel
+  if (pathname?.startsWith("/demos") || pathname?.startsWith("/admin")) {
+    return null;
+  }
+
   return (
     <footer className="relative bg-[hsl(var(--hue),12%,4%)] border-t border-[hsl(var(--hue),8%,20%)] py-8 overflow-hidden">
       <div className="max-w-[1120px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-6">
-        {/* Social Icons: GitHub, LinkedIn, Facebook (Instagram removed) */}
+        {/* Social Icons */}
         <div className="flex items-center space-x-4">
           <a
             href={githubUrl}
