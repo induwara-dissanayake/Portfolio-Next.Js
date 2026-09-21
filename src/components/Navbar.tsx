@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -96,9 +97,9 @@ export function Navbar() {
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle menu"
-          className="lg:hidden text-2xl text-[hsl(var(--hue),24%,98%)] focus:outline-none"
+          className="lg:hidden text-2xl text-[hsl(var(--hue),24%,98%)] focus:outline-none p-1"
         >
-          <i className={mobileMenuOpen ? "ri-close-large-line" : "ri-menu-line"} />
+          {mobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
         </button>
 
         {/* Mobile Navigation Menu Drawer */}
@@ -110,9 +111,9 @@ export function Navbar() {
           <button
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Close menu"
-            className="absolute top-6 right-6 text-2xl text-[hsl(var(--hue),24%,98%)]"
+            className="absolute top-6 right-6 text-2xl text-[hsl(var(--hue),24%,98%)] p-1"
           >
-            <i className="ri-close-large-line" />
+            <X className="w-7 h-7" />
           </button>
 
           <ul className="flex flex-col space-y-8 mt-16">

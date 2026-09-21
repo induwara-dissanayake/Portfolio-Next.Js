@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
@@ -48,45 +49,48 @@ export function ContactSection() {
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
-          {/* Left Column: Contact Cards */}
+          {/* Left Column: Contact Cards with Lucide React Icons */}
           <div className="lg:col-span-5 flex flex-col space-y-6">
-            <div className="bianca-card flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center text-2xl border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
-                <i className="ri-mail-line" />
+            {/* Email Card */}
+            <div className="bianca-card flex items-start gap-5 hover:border-[hsl(var(--hue),75%,60%)] transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
+                <Mail className="w-6 h-6 text-[hsl(var(--hue),75%,60%)]" />
               </div>
-              <div>
+              <div className="overflow-hidden">
                 <h3 className="text-lg font-bold font-syne text-[hsl(var(--hue),24%,98%)]">
                   Email
                 </h3>
                 <a
-                  href="mailto:induwara@email.com"
-                  className="text-sm text-[hsl(var(--hue),4%,70%)] hover:text-[hsl(var(--hue),75%,60%)] transition-colors mt-1 block"
+                  href="mailto:sahasrainduwara35@gmail.com"
+                  className="text-sm text-[hsl(var(--hue),4%,70%)] hover:text-[hsl(var(--hue),75%,60%)] transition-colors mt-1 block truncate"
                 >
-                  induwara@email.com
+                  sahasrainduwara35@gmail.com
                 </a>
               </div>
             </div>
 
-            <div className="bianca-card flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center text-2xl border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
-                <i className="ri-phone-line" />
+            {/* Phone Card */}
+            <div className="bianca-card flex items-start gap-5 hover:border-[hsl(var(--hue),75%,60%)] transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
+                <Phone className="w-6 h-6 text-[hsl(var(--hue),75%,60%)]" />
               </div>
               <div>
                 <h3 className="text-lg font-bold font-syne text-[hsl(var(--hue),24%,98%)]">
                   Phone number
                 </h3>
                 <a
-                  href="tel:+94712345678"
+                  href="tel:+94755050637"
                   className="text-sm text-[hsl(var(--hue),4%,70%)] hover:text-[hsl(var(--hue),75%,60%)] transition-colors mt-1 block"
                 >
-                  +94 71 234 5678
+                  +94 75 505 0637
                 </a>
               </div>
             </div>
 
-            <div className="bianca-card flex items-start gap-5">
-              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center text-2xl border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
-                <i className="ri-map-pin-line" />
+            {/* Location Card */}
+            <div className="bianca-card flex items-start gap-5 hover:border-[hsl(var(--hue),75%,60%)] transition-colors">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(var(--hue),12%,8%)] text-[hsl(var(--hue),75%,60%)] flex items-center justify-center border border-[hsl(var(--hue),8%,20%)] flex-shrink-0">
+                <MapPin className="w-6 h-6 text-[hsl(var(--hue),75%,60%)]" />
               </div>
               <div>
                 <h3 className="text-lg font-bold font-syne text-[hsl(var(--hue),24%,98%)]">
@@ -98,7 +102,7 @@ export function ContactSection() {
                   rel="noopener noreferrer"
                   className="text-sm text-[hsl(var(--hue),4%,70%)] hover:text-[hsl(var(--hue),75%,60%)] transition-colors mt-1 block"
                 >
-                  Colombo, Sri Lanka
+                  Gampaha, Sri Lanka
                 </a>
               </div>
             </div>
@@ -167,26 +171,26 @@ export function ContactSection() {
               <button
                 type="submit"
                 disabled={status === "loading"}
-                className="btn-bianca w-full text-center py-4 rounded-xl font-semibold justify-center text-base"
+                className="btn-bianca w-full text-center py-4 rounded-xl font-semibold justify-center text-base flex items-center gap-2"
               >
                 {status === "loading" ? (
                   <span>Sending...</span>
                 ) : (
                   <>
-                    Send Message <i className="ri-send-plane-fill" />
+                    Send Message <Send className="w-5 h-5" />
                   </>
                 )}
               </button>
 
               {status === "success" && (
-                <p className="text-sm text-emerald-400 font-medium text-center">
-                  Message sent successfully! ✅
+                <p className="text-sm text-emerald-400 font-medium text-center flex items-center justify-center gap-2">
+                  <CheckCircle className="w-4 h-4" /> Message sent successfully!
                 </p>
               )}
 
               {status === "error" && (
-                <p className="text-sm text-rose-400 font-medium text-center">
-                  Message not sent (service error) ❌
+                <p className="text-sm text-rose-400 font-medium text-center flex items-center justify-center gap-2">
+                  <AlertCircle className="w-4 h-4" /> Message not sent (service error)
                 </p>
               )}
             </form>

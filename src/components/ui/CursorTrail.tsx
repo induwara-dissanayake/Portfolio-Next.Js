@@ -64,9 +64,9 @@ export default function CursorTrail({ className = '' }: CursorTrailProps) {
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = '#8B5CF6';
-        ctx.shadowBlur = 20;
-        ctx.shadowColor = '#8B5CF6';
+        ctx.fillStyle = '#39e75f';
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#39e75f';
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
         ctx.fill();
