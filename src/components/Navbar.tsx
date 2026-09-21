@@ -1,107 +1,148 @@
 "use client";
-import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { Menu } from 'lucide-react';
+
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const { scrollY } = useScroll();
-  const opacity = useTransform(scrollY, [0, 100], [0.8, 0.95]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
 
   useEffect(() => {
-  const unsubscribe = scrollY.on('change', (latest) => {
-      setIsScrolled(latest > 50);
-    });
-    return unsubscribe;
-  }, [scrollY]);
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
 
-  const navItems = [
-    { href: '/', label: 'Home' },
-    { href: '/projects', label: 'Projects' },
-    { href: '/blog', label: 'Blog' },
-    { href: '/contact', label: 'Contact' },
+      // Determine active section based on scroll position
+      const sections = ["home", "work", "service", "skills", "contact"];
+      const scrollPos = window.scrollY + 200;
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId);
+        if (el) {
+          const top = el.offsetTop;
+          const height = el.offsetHeight;
+          if (scrollPos >= top && scrollPos < top + height) {
+            setActiveSection(sectionId);
+            break;
+          }
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const navLinks = [
+    { href: "#home", label: "Home", id: "home" },
+    { href: "#work", label: "Works", id: "work" },
+    { href: "#service", label: "My Services", id: "service" },
+    { href: "#skills", label: "Skills", id: "skills" },
   ];
 
-  const [open, setOpen] = useState(false);
   return (
-    <motion.nav
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-      style={{ opacity }}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8 }}
+    <header
+      className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
+        isScrolled
+          ? "bg-[hsla(var(--hue),8%,10%,0.75)] backdrop-blur-xl border-b border-[hsl(var(--hue),8%,20%)] py-4"
+          : "bg-transparent py-6"
+      }`}
     >
-      <div className="mx-auto max-w-7xl px-6">
-        <motion.div
-          className={`backdrop-blur-xl border border-white/10 rounded-2xl mt-4 transition-all duration-300 ${
-            isScrolled 
-              ? 'bg-black/20 dark:bg-white/5 shadow-2xl' 
-              : 'bg-black/10 dark:bg-white/5'
-          }`}
-          layout
+      <nav className="max-w-[1120px] mx-auto px-6 flex items-center justify-between">
+        {/* Logo */}
+        <Link
+          href="#home"
+          className="text-2xl font-bold font-syne text-[hsl(var(--hue),24%,98%)] hover:text-[hsl(var(--hue),75%,60%)] transition-colors"
         >
-          <div className="flex items-center justify-between px-6 py-4">
-            {/* Logo */}
-            <Link href="/" className="group">
-              <motion.div
-                className="text-2xl font-black bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500 bg-clip-text text-transparent"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                I.
-              </motion.div>
-            </Link>
+          Induwara
+        </Link>
 
-            {/* Navigation Links */}
-            <div className="hidden md:flex items-center space-x-8">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+        {/* Desktop Navigation Links */}
+        <div className="hidden lg:flex items-center space-x-12">
+          <ul className="flex items-center space-x-10">
+            {navLinks.map((link) => (
+              <li key={link.id}>
+                <a
+                  href={link.href}
+                  className={`relative font-semibold transition-colors duration-300 ${
+                    activeSection === link.id
+                      ? "text-[hsl(var(--hue),75%,60%)]"
+                      : "text-[hsl(var(--hue),24%,98%)] hover:text-[hsl(var(--hue),75%,60%)]"
+                  }`}
                 >
-                  <Link
-                    href={item.href}
-                    className="relative text-gray-300 hover:text-white transition-colors duration-300 group"
-                  >
-                    {item.label}
-                    <motion.div
-                      className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-purple-400 to-pink-500"
-                      initial={{ width: 0 }}
-                      whileHover={{ width: '100%' }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-            <button className="md:hidden p-2 rounded-lg border border-white/10" onClick={()=>setOpen(v=>!v)} aria-label="Menu">
-              <Menu size={20} />
-            </button>
-          </div>
-        </motion.div>
-      </div>
+                  {link.label}
+                  {activeSection === link.id && (
+                    <span className="absolute -left-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[hsl(var(--hue),75%,60%)] rounded-full" />
+                  )}
+                </a>
+              </li>
+            ))}
+          </ul>
 
-      {/* Mobile Menu Dropdown */}
-      {open && (
-        <motion.div
-          className="md:hidden fixed top-20 left-0 right-0 px-6"
-          initial={{ y: -10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
+          {/* Contact Pill Button */}
+          <a
+            href="#contact"
+            className="btn-bianca text-sm py-3 px-7 rounded-full bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] font-semibold hover:shadow-[0_8px_24px_hsla(var(--hue),75%,60%,0.3)] transition-all duration-300"
+          >
+            Contact me
+          </a>
+        </div>
+
+        {/* Mobile Toggle Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle menu"
+          className="lg:hidden text-2xl text-[hsl(var(--hue),24%,98%)] focus:outline-none"
         >
-          <div className="mx-auto max-w-7xl backdrop-blur-xl bg-black/40 border border-white/10 rounded-2xl p-4">
-            <div className="flex flex-col gap-3">
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href} className="text-gray-200 hover:text-white text-base" onClick={()=>setOpen(false)}>
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </motion.nav>
+          <i className={mobileMenuOpen ? "ri-close-large-line" : "ri-menu-line"} />
+        </button>
+
+        {/* Mobile Navigation Menu Drawer */}
+        <div
+          className={`fixed top-0 right-0 h-screen w-[75%] max-w-[320px] bg-[hsla(var(--hue),8%,10%,0.95)] backdrop-blur-2xl p-10 z-[100] transition-transform duration-400 ease-in-out lg:hidden border-l border-[hsl(var(--hue),8%,20%)] ${
+            mobileMenuOpen ? "translate-x-0 shadow-2xl" : "translate-x-full"
+          }`}
+        >
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close menu"
+            className="absolute top-6 right-6 text-2xl text-[hsl(var(--hue),24%,98%)]"
+          >
+            <i className="ri-close-large-line" />
+          </button>
+
+          <ul className="flex flex-col space-y-8 mt-16">
+            {navLinks.map((link) => (
+              <li key={link.id}>
+                <a
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`text-xl font-semibold transition-colors ${
+                    activeSection === link.id
+                      ? "text-[hsl(var(--hue),75%,60%)]"
+                      : "text-[hsl(var(--hue),24%,98%)]"
+                  }`}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+            <li className="pt-4">
+              <a
+                href="#contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="btn-bianca w-full text-center py-3 rounded-full text-sm font-semibold"
+              >
+                Contact me
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
   );
 }

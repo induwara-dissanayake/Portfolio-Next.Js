@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import CursorTrail from "@/components/ui/CursorTrail";
-import FluidBackground from "@/components/ui/FluidBackground";
 import DevConsoleFilter from "@/components/DevConsoleFilter";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Induwara - Full-Stack Developer & AI Creator",
-  description: "Portfolio of Induwara - Full-Stack Developer, AI Creator & UI/UX Enthusiast",
+  title: "Induwara - Portfolio | Web Developer & Creative Designer",
+  description:
+    "Portfolio of Induwara - Experienced Full-Stack Web Developer & Creative Designer. Explore projects, services, skills, and get in touch.",
 };
 
 export default function RootLayout({
@@ -29,19 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-black text-white overflow-x-hidden`}>
-        {/* Background Effects */}
-        <FluidBackground />
+      <body className="antialiased min-h-screen bg-[hsl(var(--hue),12%,4%)] text-[hsl(var(--hue),4%,70%)] overflow-x-hidden">
         <CursorTrail />
-  <DevConsoleFilter />
+        <DevConsoleFilter />
 
-        {/* Main Content */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col min-h-screen">
           <Navbar />
-          <main className="min-h-screen pt-20">{children}</main>
-          <div className="mx-auto max-w-7xl px-6">
-            <Footer />
-          </div>
+          <main className="flex-grow">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>
