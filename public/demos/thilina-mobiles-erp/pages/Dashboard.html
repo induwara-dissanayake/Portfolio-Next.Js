@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Thilina Mobiles ERP - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="../css/accounts.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="../js/config.js"></script>
+    <!-- PDF Generation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Sidebar -->
+    <div
+      id="sidebar"
+      class="sidebar fixed left-0 top-0 h-full w-64 z-40 transform transition-transform lg:translate-x-0"
+    >
+      <!-- Logo Section -->
+      <div
+        class="flex items-center justify-center py-6 px-4 border-b border-white/20"
+      >
+        <div class="flex items-center space-x-3">
+          <img
+            src="../assets/LOGO.png"
+            alt="Thilina Mobiles"
+            class="w-10 h-10 rounded-lg"
+          />
+          <div class="text-white">
+            <h1 class="text-lg font-bold">Thilina Mobiles</h1>
+            <p class="text-xs text-blue-200">Admin Panel</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="mt-6">
+        <ul class="space-y-2">
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('dashboard')"
+              class="sidebar-item active flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="home" class="w-5 h-5 mr-3"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('products')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="box" class="w-5 h-5 mr-3"></i>
+              Products
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('inventory')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="package" class="w-5 h-5 mr-3"></i>
+              Inventory
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('purchase')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="clipboard" class="w-5 h-5 mr-3"></i>
+              GRN
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('users')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="users" class="w-5 h-5 mr-3"></i>
+              Users
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('employee')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="user-check" class="w-5 h-5 mr-3"></i>
+              Employees
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('customer')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="user-plus" class="w-5 h-5 mr-3"></i>
+              Customers
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('supplier')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="truck" class="w-5 h-5 mr-3"></i>
+              Sales REP
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('repair')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="tool" class="w-5 h-5 mr-3"></i>
+              Repairs
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('accounts')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="dollar-sign" class="w-5 h-5 mr-3"></i>
+              Accounts
+            </a>
+          </li>
+          <li>
+            <a
+              href="#"
+              onclick="loadPage('bills')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="file-text" class="w-5 h-5 mr-3"></i>
+              Bills
+            </a>
+          </li>
+          <li>
+            <a
+              href="pos.html"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="shopping-cart" class="w-5 h-5 mr-3"></i>
+              POS System
+            </a>
+          </li>
+          <li class="hidden" aria-hidden="true">
+            <a
+              href="#"
+              onclick="loadPage('settings')"
+              class="sidebar-item flex items-center px-4 py-3 text-white text-sm font-medium"
+            >
+              <i data-feather="settings" class="w-5 h-5 mr-3"></i>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- User Profile Section -->
+      <div class="absolute bottom-0 w-full p-4 border-t border-white/20">
+        <div class="flex items-center space-x-3">
+          <img
+            src="../assets/user.jpg"
+            alt="Admin"
+            class="w-10 h-10 rounded-full border-2 border-white/20"
+          />
+          <div class="text-white">
+            <p class="text-sm font-medium">Admin User</p>
+            <p class="text-xs text-blue-200">System Administrator</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Toggle -->
+    <div class="lg:hidden">
+      <button
+        id="mobile-menu-toggle"
+        class="fixed top-4 left-4 z-50 p-2 bg-blue-600 text-white rounded-md"
+      >
+        <i data-feather="menu" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64 min-w-0">
+      <!-- Header -->
+      <header class="header-gradient text-white shadow-lg">
+        <div class="flex justify-between items-center px-6 py-4">
+          <div>
+            <h1 id="page-title" class="text-2xl font-bold">Dashboard</h1>
+            <p id="page-subtitle" class="text-blue-200">
+              Welcome to Thilina Mobiles ERP System
+            </p>
+          </div>
+          <div class="flex items-center space-x-4">
+            <a href="/#work" class="inline-flex items-center px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 text-white font-medium text-xs border border-white/30 transition-all">
+              &#8592; Back to Portfolio
+            </a>
+            <div class="text-right">
+              <p class="text-sm">Today's Date</p>
+              <p id="current-date" class="text-lg font-semibold"></p>
+            </div>
+            <button
+              onclick="logout()"
+              class="btn-secondary px-4 py-2 rounded-lg text-white font-medium"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Content -->
+      <main id="main-content" class="p-4 sm:p-6 min-w-0 overflow-x-hidden">
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="content-fade-in">
+          <!-- Stats Cards -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
+          >
+            <div class="stat-card revenue card p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-600 text-sm font-medium">Total Revenue</p>
+                  <p class="text-3xl font-bold text-gray-800" id="dashboard-total-revenue">0</p>
+                  <p class="text-green-500 text-sm mt-1">
+                    <span class="font-medium">Current Month</span>
+                  </p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-full">
+                  <i
+                    data-feather="trending-up"
+                    class="w-6 h-6 text-green-600"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card sales card p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-600 text-sm font-medium">Total Sales</p>
+                  <p class="text-3xl font-bold text-gray-800" id="dashboard-total-sales">0</p>
+                  <p class="text-orange-500 text-sm mt-1">
+                    <span class="font-medium">Current Month</span>
+                  </p>
+                </div>
+                <div class="bg-orange-100 p-3 rounded-full">
+                  <i
+                    data-feather="shopping-bag"
+                    class="w-6 h-6 text-orange-600"
+                  ></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card customers card p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-600 text-sm font-medium">
+                    Active Customers
+                  </p>
+                  <p class="text-3xl font-bold text-gray-800" id="dashboard-active-customers">0</p>
+                  <p class="text-blue-500 text-sm mt-1">
+                    <span class="font-medium">Current Month</span>
+                  </p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-full">
+                  <i data-feather="users" class="w-6 h-6 text-blue-600"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="stat-card repairs card p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-gray-600 text-sm font-medium">
+                    Pending Repairs
+                  </p>
+                  <p class="text-3xl font-bold text-gray-800" id="dashboard-pending-repairs">0</p>
+                  <p class="text-yellow-500 text-sm mt-1">
+                    <span class="font-medium">Active</span>
+                  </p>
+                </div>
+                <div class="bg-yellow-100 p-3 rounded-full">
+                  <i data-feather="tool" class="w-6 h-6 text-yellow-600"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Section -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Sales Chart -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                Sales Overview
+              </h3>
+              <canvas id="salesChart"></canvas>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                Revenue Trends
+              </h3>
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent Activities -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Sales -->
+            <div class="card">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Recent Sales
+                </h3>
+              </div>
+              <div class="p-6">
+                <div id="dashboard-recent-sales-container" class="space-y-4">
+                  <!-- Dynamic content -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Low Stock Alerts -->
+            <div class="card">
+              <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-800">
+                  Low Stock Alerts
+                </h3>
+              </div>
+              <div class="p-6">
+                <div id="dashboard-low-stock-container" class="space-y-4">
+                  <!-- Dynamic content -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="dynamic-content" class="hidden"></div>
+      </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div
+      id="loading-overlay"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden"
+    >
+      <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Utility Scripts -->
+    <script>
+      feather.replace();
+
+      // Set current date
+      document.getElementById("current-date").textContent =
+        new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+
+      // Mobile menu toggle
+      document
+        .getElementById("mobile-menu-toggle")
+        .addEventListener("click", function () {
+          document.getElementById("sidebar").classList.toggle("mobile-open");
+        });
+
+      if (typeof initializeDashboard === "function") {
+        initializeDashboard();
+      }
+    </script>
+
+    <!-- JavaScript Files -->
+    <!-- PDF Generation Libraries -->
+    <script src="../../node_modules/jspdf/dist/jspdf.umd.min.js"></script>
+    <script src="../../node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.min.js"></script>
+    <!-- Excel export -->
+    <script src="../../node_modules/exceljs/dist/exceljs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+
+    <!-- Authentication Check -->
+    <script>
+      // Check authentication before loading dashboard
+      function checkDashboardAuthentication() {
+        const token = sessionStorage.getItem("authToken");
+        const userInfo = sessionStorage.getItem("user");
+
+        if (!token) {
+          // No token found, redirect to login
+          window.location.href = "login.html";
+          return false;
+        }
+
+        // Update user info in sidebar if available
+        if (userInfo) {
+          try {
+            const user = JSON.parse(userInfo);
+            const userRole = String(user.userRoleName || user.role || "")
+              .trim()
+              .toLowerCase();
+
+            // Cashier is POS-only
+            if (userRole === "cashier") {
+              window.location.href = "pos.html";
+              return false;
+            }
+
+            const adminUserElement = document.querySelector(
+              ".text-white .text-sm.font-medium"
+            );
+            const adminRoleElement = document.querySelector(
+              ".text-white .text-xs.text-blue-200"
+            );
+
+            if (adminUserElement) {
+              adminUserElement.textContent = user.username || "User";
+            }
+            if (adminRoleElement) {
+              adminRoleElement.textContent =
+                user.userRoleName || user.role || "User";
+            }
+          } catch (e) {
+            console.warn("Could not parse user info from session");
+          }
+        }
+
+        return true;
+      }
+
+      // Logout function
+      function logout() {
+        if (confirm("Are you sure you want to logout?")) {
+          // Show loading state
+          const logoutBtn = event.target;
+          const originalText = logoutBtn.textContent;
+          logoutBtn.textContent = "Logging out...";
+          logoutBtn.disabled = true;
+
+          // Clear session storage
+          sessionStorage.removeItem("authToken");
+          sessionStorage.removeItem("user");
+
+          // Small delay for better UX
+          setTimeout(() => {
+            // Redirect to login
+            window.location.href = "login.html";
+          }, 500);
+        }
+      }
+
+      // Check authentication on page load
+      if (!checkDashboardAuthentication()) {
+        // Stop loading other scripts if authentication fails
+        document.addEventListener("DOMContentLoaded", function (e) {
+          e.stopImmediatePropagation();
+        });
+      }
+    </script>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/data/mock-data.js"></script>
+    <script src="../js/data/constants.js"></script>
+    <script src="../js/utils/notifications.js"></script>
+    <script src="../js/utils/export-helper.js"></script>
+    <script src="../js/main.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/products.js"></script>
+    <script src="../js/inventory-stock.js"></script>
+    <script src="../js/bank-accounts.js"></script>
+    <script src="../js/grn.js"></script>
+    <script src="../js/users.js"></script>
+    <script src="../js/employees.js"></script>
+    <script src="../js/customers.js"></script>
+    <script src="../js/suppliers.js"></script>
+    <script src="../js/repairs.js"></script>
+    <script src="../js/accounts.js"></script>
+    <script src="../js/accounts-extended.js"></script>
+    <script src="../js/accounts-modals.js"></script>
+    <script src="../js/accounts-modals-extended.js"></script>
+    <script src="../js/accounts-export.js"></script>
+    <script src="../js/bills.js"></script>
+    <script src="../js/bills-modals.js"></script>
+    <script src="../js/settings.js"></script>
+  </body>
+</html>

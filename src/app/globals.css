@@ -1,26 +1,196 @@
 @import 'tailwindcss';
 
-/* Custom global styles */
-html,
-body {
-  min-height: 100%;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+/*=============== GOOGLE FONTS & REMIXICONS ===============*/
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Syne:wght@400..800&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css");
+
+/*=============== VARIABLES CSS ===============*/
+:root {
+  --header-height: 3.5rem;
+  --hue: 110;
+  --first-color: hsl(var(--hue), 75%, 60%);
+  --first-color-alt: hsl(var(--hue), 75%, 50%);
+  --gradient-color: linear-gradient(90deg, hsl(var(--hue), 75%, 60%) 0%,
+                                           hsl(var(--hue), 100%, 85%) 40%,
+                                           hsl(var(--hue), 100%, 85%) 60%,
+                                           hsl(var(--hue), 75%, 60%) 100%);
+  --white-color: hsl(var(--hue), 24%, 98%);
+  --black-color: hsl(var(--hue), 12%, 8%);
+  --text-color: hsl(var(--hue), 4%, 70%);
+  --body-color: hsl(var(--hue), 12%, 4%);
+  --container-color: hsl(var(--hue), 8%, 10%);
+  --border-color: hsl(var(--hue), 8%, 20%);
+
+  --body-font: "Poppins", sans-serif;
+  --second-font: "Syne", sans-serif;
+  
+  --biggest-font-size: 2rem;
+  --bigger-font-size: 1.75rem;
+  --h1-font-size: 1.5rem;
+  --h2-font-size: 1.25rem;
+  --h3-font-size: 1rem;
+  --normal-font-size: .938rem;
+  --small-font-size: .813rem;
+  --smaller-font-size: .75rem;
+
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semi-bold: 600;
+
+  --z-tooltip: 10;
+  --z-fixed: 100;
 }
 
-/* Ensure text doesn't break layout on mobile */
-.text-responsive {
-  word-break: break-word;
-  overflow-wrap: break-word;
-  max-width: 100%;
-}
-
-/* Gradient text only for desktop to avoid mobile issues */
-@media (min-width: 768px) {
-  .gradient-text {
-    background: linear-gradient(to right, rgb(168, 85, 247), rgb(236, 72, 153), rgb(6, 182, 212));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
+@media (width >= 1150px) {
+  :root {
+    --biggest-font-size: 4.5rem;
+    --bigger-font-size: 3rem;
+    --h1-font-size: 2.25rem;
+    --h2-font-size: 1.5rem;
+    --h3-font-size: 1.25rem;
+    --normal-font-size: 1rem;
+    --small-font-size: .875rem;
+    --smaller-font-size: .813rem;
   }
+}
+
+/*=============== BASE & UTILITIES ===============*/
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  background-color: var(--body-color);
+  color: var(--text-color);
+  font-family: var(--body-font);
+  font-size: var(--normal-font-size);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, .font-syne {
+  color: var(--white-color);
+  font-family: var(--second-font);
+  font-weight: var(--font-semi-bold);
+}
+
+.section {
+  padding-block: 5rem 2rem;
+}
+
+@media (width >= 1150px) {
+  .section {
+    padding-block: 7rem 3rem;
+  }
+}
+
+.section__title {
+  text-align: center;
+  font-size: var(--bigger-font-size);
+  color: var(--white-color);
+  margin-bottom: 2.5rem;
+  font-family: var(--second-font);
+}
+
+.section__title span {
+  color: var(--first-color);
+}
+
+/*=============== GLOW BLOBS ===============*/
+.blob-small, .blob-big {
+  background-color: var(--first-color);
+  border-radius: 50%;
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.blob-small {
+  width: 120px;
+  height: 120px;
+  filter: blur(60px);
+  opacity: 0.6;
+}
+
+.blob-big {
+  width: 250px;
+  height: 250px;
+  filter: blur(120px);
+  opacity: 0.45;
+}
+
+/*=============== CIRCULAR ROTATING TEXT ===============*/
+@keyframes rotateText {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-circular-text {
+  animation: rotateText 15s linear infinite;
+}
+
+.rotate-circular-text:hover {
+  animation-play-state: paused;
+}
+
+/*=============== INFINITE MARQUEE ===============*/
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/*=============== CUSTOM BUTTONS ===============*/
+.btn-bianca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 0.5rem;
+  background-color: var(--first-color);
+  color: var(--black-color);
+  padding: 1rem 2rem;
+  border-radius: 4rem;
+  font-weight: var(--font-semi-bold);
+  font-family: var(--body-font);
+  transition: all 0.3s ease;
+}
+
+.btn-bianca:hover {
+  box-shadow: 0 8px 24px hsla(var(--hue), 75%, 60%, 0.35);
+  transform: translateY(-2px);
+}
+
+/*=============== BIANCA CARD STYLES ===============*/
+.bianca-card {
+  background-color: var(--container-color);
+  border: 1px solid var(--border-color);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  transition: all 0.3s ease;
+}
+
+.bianca-card:hover {
+  border-color: var(--first-color);
 }

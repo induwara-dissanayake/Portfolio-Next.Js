@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Thilina Mobiles ERP - Portfolio Demo</title>
+  <script>
+    if (!sessionStorage.getItem("authToken")) {
+      sessionStorage.setItem("authToken", "demo-token-thilina-123");
+      sessionStorage.setItem("user", JSON.stringify({
+        id: 1,
+        username: "admin",
+        userRoleName: "Admin",
+        role: "admin",
+        fullName: "Induwara (Admin)"
+      }));
+    }
+    window.location.href = "pages/Dashboard.html";
+  </script>
+</head>
+<body style="font-family: system-ui, -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #042235; color: white;">
+  <div style="text-align: center;">
+    <h2>Thilina Mobiles ERP System</h2>
+    <p>Redirecting to Demo Dashboard...</p>
+  </div>
+</body>
+</html>

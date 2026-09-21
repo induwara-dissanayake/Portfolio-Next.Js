@@ -1,0 +1,528 @@
+/* Accounts Module Specific Styles */
+
+/* Tab Styles for Accounts */
+.accounts-tab-btn {
+  color: var(--gray-medium);
+  border-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.accounts-tab-btn:hover {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.accounts-tab-btn.active {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.accounts-tab-btn-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.accounts-tab-btn-disabled:hover {
+  color: var(--gray-medium);
+  border-color: transparent;
+}
+
+/* Account Section Styles */
+.account-section {
+  transition: all 0.3s ease;
+}
+
+.account-section.hidden {
+  display: none;
+}
+
+/* Account Row Styles */
+.account-row {
+  transition: all 0.2s ease;
+}
+
+.account-row:hover {
+  background-color: rgba(25, 123, 189, 0.02);
+}
+
+/* Account Children */
+.account-children {
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.account-children.hidden {
+  display: none;
+}
+
+/* Chevron Animation */
+.account-section i[data-feather="chevron-down"],
+.account-row i[data-feather="chevron-right"] {
+  transition: transform 0.3s ease;
+}
+
+/* Account Type Cards */
+.account-type-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.account-type-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Transaction Mapping Cards */
+.mapping-card {
+  transition: all 0.3s ease;
+}
+
+.mapping-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Debit/Credit Badges */
+.debit-badge {
+  background-color: var(--success-green);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.credit-badge {
+  background-color: var(--error-red);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Journal Entry Styles */
+.journal-entry-card {
+  border-left: 4px solid var(--primary-blue);
+  transition: all 0.2s ease;
+}
+
+.journal-entry-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateX(2px);
+}
+
+.journal-entry-line {
+  transition: all 0.2s ease;
+}
+
+.journal-entry-line:hover {
+  background-color: var(--gray-light);
+}
+
+/* Report Styles */
+.report-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.report-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.report-card:active {
+  transform: translateY(-2px);
+}
+
+/* Report Tables */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.report-table thead {
+  background: linear-gradient(135deg, var(--primary-dark-blue) 0%, var(--primary-blue) 100%);
+  color: white;
+}
+
+.report-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.report-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.report-table tbody tr:hover {
+  background-color: var(--gray-light);
+}
+
+.report-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Balance Indicators */
+.balance-positive {
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+.balance-negative {
+  color: var(--error-red);
+  font-weight: 600;
+}
+
+.balance-neutral {
+  color: var(--gray-medium);
+}
+
+/* Account Balance Display */
+.account-balance {
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* Account Code Display */
+.account-code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  color: var(--gray-medium);
+  background-color: var(--gray-light);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Status Indicators */
+.status-active {
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+.status-inactive {
+  color: var(--error-red);
+  font-weight: 600;
+}
+
+.status-draft {
+  color: var(--warning-yellow);
+  font-weight: 600;
+}
+
+.status-posted {
+  color: var(--success-green);
+  font-weight: 600;
+}
+
+/* Financial Statement Sections */
+.financial-section {
+  margin-bottom: 32px;
+}
+
+.financial-section-header {
+  font-size: 18px;
+  font-weight: 700;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  border-bottom: 3px solid;
+}
+
+.financial-section-header.assets {
+  color: var(--primary-blue);
+  border-bottom-color: var(--primary-blue);
+}
+
+.financial-section-header.liabilities {
+  color: var(--error-red);
+  border-bottom-color: var(--error-red);
+}
+
+.financial-section-header.equity {
+  color: #8B5CF6;
+  border-bottom-color: #8B5CF6;
+}
+
+.financial-section-header.revenue {
+  color: var(--success-green);
+  border-bottom-color: var(--success-green);
+}
+
+.financial-section-header.expenses {
+  color: var(--accent-orange);
+  border-bottom-color: var(--accent-orange);
+}
+
+/* Financial Line Items */
+.financial-line-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.financial-line-item:last-child {
+  border-bottom: none;
+}
+
+.financial-line-item.total {
+  font-weight: 700;
+  font-size: 16px;
+  padding-top: 12px;
+  margin-top: 8px;
+  border-top: 2px solid var(--gray-dark);
+}
+
+.financial-line-item.subtotal {
+  font-weight: 600;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--gray-medium);
+}
+
+/* Balance Sheet Specific */
+.balance-sheet-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Income Statement Specific */
+.income-statement-section {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.net-income-box {
+  padding: 24px;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 24px;
+}
+
+.net-income-box.profit {
+  background: linear-gradient(135deg, rgba(62, 175, 63, 0.1) 0%, rgba(62, 175, 63, 0.05) 100%);
+  border: 2px solid var(--success-green);
+}
+
+.net-income-box.loss {
+  background: linear-gradient(135deg, rgba(225, 73, 66, 0.1) 0%, rgba(225, 73, 66, 0.05) 100%);
+  border: 2px solid var(--error-red);
+}
+
+/* Trial Balance Specific */
+.trial-balance-balanced {
+  background-color: rgba(62, 175, 63, 0.1);
+  border: 2px solid var(--success-green);
+  color: var(--success-green);
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.trial-balance-unbalanced {
+  background-color: rgba(225, 73, 66, 0.1);
+  border: 2px solid var(--error-red);
+  color: var(--error-red);
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Account Hierarchy Indentation */
+.account-level-0 {
+  margin-left: 0;
+}
+
+.account-level-1 {
+  margin-left: 24px;
+}
+
+.account-level-2 {
+  margin-left: 48px;
+}
+
+.account-level-3 {
+  margin-left: 72px;
+}
+
+/* Hover Effects for Interactive Elements */
+.account-action-btn {
+  transition: all 0.2s ease;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.account-action-btn:hover {
+  background-color: var(--gray-light);
+  transform: scale(1.1);
+}
+
+/* Filter Section */
+.filter-section {
+  background-color: var(--gray-light);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.filter-section input,
+.filter-section select {
+  transition: all 0.2s ease;
+}
+
+.filter-section input:focus,
+.filter-section select:focus {
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(25, 123, 189, 0.1);
+  outline: none;
+}
+
+/* Export Button */
+.export-btn {
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-light-orange) 100%);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 141, 40, 0.3);
+}
+
+/* Responsive Design for Accounts */
+@media (max-width: 768px) {
+  .account-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  .account-balance {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .report-table {
+    font-size: 12px;
+  }
+
+  .report-table th,
+  .report-table td {
+    padding: 8px;
+  }
+
+  .financial-section-header {
+    font-size: 16px;
+  }
+
+  .net-income-box {
+    padding: 16px;
+  }
+}
+
+/* Print Styles for Reports */
+@media print {
+
+  .accounts-tab-btn,
+  .btn-primary,
+  .btn-secondary,
+  .export-btn,
+  .account-action-btn {
+    display: none !important;
+  }
+
+  .report-table {
+    page-break-inside: avoid;
+  }
+
+  .financial-section {
+    page-break-inside: avoid;
+  }
+
+  body {
+    background: white;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
+
+/* Animation for Tab Content */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+#accounts-tab-content {
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+/* Tooltip Styles */
+.account-tooltip {
+  position: relative;
+}
+
+.account-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--gray-dark);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 8px;
+}
+
+/* Loading State */
+.accounts-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 48px;
+}
+
+.accounts-loading-spinner {
+  border: 4px solid var(--gray-light);
+  border-top: 4px solid var(--primary-blue);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+}
