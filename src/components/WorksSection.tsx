@@ -3,17 +3,17 @@
 import Image from "next/image";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, ExternalLink, Github, Maximize2, X } from "lucide-react";
+import { ExternalLink, Github, Maximize2, X, ArrowUpRight } from "lucide-react";
 
 export interface ProjectItem {
   id: number;
   number: string;
   title: string;
-  category: "Web Dev" | "UI/UX Design" | "Systems" | "SEO & Apps";
+  category: "Web Dev" | "Desktop app" | "social media";
   description: string;
   fullDescription: string;
   image: string;
-  url?: string;
+  url: string;
   githubUrl?: string;
   technologies: string[];
 }
@@ -23,66 +23,66 @@ export function WorksSection() {
     {
       id: 1,
       number: "01",
-      title: "Restaurant Website",
+      title: "DentQ - Dental Queue Management System",
       category: "Web Dev",
-      description: "Professional website for a hospitality company, using HTML, CSS, JavaScript, Gsap, Figma & Database.",
-      fullDescription: "A feature-rich interactive restaurant showcase website with online reservation tables, digital menu displays, location finder, and smooth GSAP scroll animations. Built for optimal mobile responsiveness and lighting-fast load speeds.",
+      description: "Online dental queue reservation platform allowing patients to reserve tokens and view live queue statuses from home.",
+      fullDescription: "DentQ is a modern healthcare web application designed for dental clinics. Patients can select preferred appointment dates, reserve queue tokens online, explore treatments, and monitor live clinic queue statuses to eliminate waiting room delays.",
       image: "/assets/img/work-img-1.png",
-      url: "https://example.com/restaurant",
-      githubUrl: "https://github.com",
-      technologies: ["React", "HTML5/CSS3", "GSAP", "Tailwind CSS"],
+      url: "https://dental-bay-nine.vercel.app/",
+      githubUrl: "https://github.com/induwara-dissanayake",
+      technologies: ["Next.js", "Tailwind CSS", "Clerk Auth", "React Query", "TypeScript"],
     },
     {
       id: 2,
       number: "02",
-      title: "Design For Agriculture",
-      category: "UI/UX Design",
-      description: "Modern landing platform built for agricultural tech, showcasing interactive dashboards and smart IoT insights.",
-      fullDescription: "Comprehensive AgTech platform design empowering farmers and enterprise agricultural managers with real-time weather analytics, crop soil monitoring dashboards, and clean data visualizations created in Figma and implemented in Next.js.",
+      title: "Blastin & Lastin - US Cleaning Platform",
+      category: "Web Dev",
+      description: "Full exterior cleaning web system for US clients featuring instant quote calculation, electronic booking & reviews.",
+      fullDescription: "Engineered a high-conversion exterior house washing and pressure cleaning web platform serving the Greater Houston area. Features instant online quote estimations, service photo galleries, electronic agreement signing, customer review systems, and area service maps.",
       image: "/assets/img/work-img-2.png",
-      url: "https://example.com/agtech",
-      githubUrl: "https://github.com",
-      technologies: ["Figma", "Next.js", "Tailwind CSS", "Recharts"],
+      url: "https://blastinandlastin.us/",
+      githubUrl: "https://github.com/induwara-dissanayake",
+      technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Vercel"],
     },
     {
       id: 3,
       number: "03",
-      title: "Chicken Shop Website",
-      category: "Web Dev",
-      description: "Fast ecommerce web application for fast-food chain with online ordering and live tracking.",
-      fullDescription: "High-conversion fast-food ecommerce application featuring custom basket checkout, real-time order status tracking, dynamic coupon system, and seamless integration with payment gateways.",
-      image: "/assets/img/work-img-3.png",
-      url: "https://example.com/chickenshop",
-      githubUrl: "https://github.com",
-      technologies: ["React", "TypeScript", "Node.js", "Express"],
+      title: "ERP System - Thilina Mobiles",
+      category: "Desktop app",
+      description: "Full ERP desktop application built for a mobile phone sales, inventory, and repair service shop.",
+      fullDescription: "A comprehensive enterprise desktop ERP system designed to streamline mobile store operations. Includes real-time inventory management, repair job tracking cards, point of sale (POS) billing, daily financial summaries, and customer repair status notifications.",
+      image: "/assets/img/work-img-4.png",
+      url: "https://github.com/induwara-dissanayake",
+      githubUrl: "https://github.com/induwara-dissanayake",
+      technologies: ["TypeScript", "Electron.js", "Node.js", "SQLite/SQL", "Tailwind CSS"],
     },
     {
       id: 4,
       number: "04",
-      title: "Complete Systems For Mining",
-      category: "Systems",
-      description: "Enterprise system management software designed for data monitoring, safety, and operational workflows.",
-      fullDescription: "Industrial-grade desktop and cloud management platform for heavy mining operations. Handles telemetry streaming, asset management alerts, multi-level user permissions, and automated audit logging.",
-      image: "/assets/img/work-img-4.png",
-      url: "https://example.com/miningsystem",
-      githubUrl: "https://github.com",
-      technologies: ["TypeScript", "Python", "Docker", "Tailwind CSS"],
+      title: "Bookshop Manager Desktop App",
+      category: "Desktop app",
+      description: "Private bookshop management software for weekly book rentals, return reminders, and fee calculations.",
+      fullDescription: "Desktop management application built for a private bookshop offering weekly rental memberships. Features member subscription records, automated weekly return date tracking, late fee calculations, book inventory indexing, and revenue analytics.",
+      image: "/assets/img/work-img-3.png",
+      url: "https://github.com/induwara-dissanayake",
+      githubUrl: "https://github.com/induwara-dissanayake",
+      technologies: ["Desktop Framework", "TypeScript", "SQLite", "Node.js"],
     },
     {
       id: 5,
       number: "05",
-      title: "SEO Medicine Website",
-      category: "SEO & Apps",
-      description: "Optimized healthcare website designed for maximum accessibility, search engine ranking, and speed.",
-      fullDescription: "High-performance medical portal compliant with accessibility guidelines. Optimized with structured JSON-LD schemas, dynamic metadata generation, and sub-second load times to capture top Google search rankings.",
+      title: "Samantha Prasath SFT Media Content",
+      category: "social media",
+      description: "Social media visual graphics, educational promo banners, and media campaigns for prominent SFT tuition lecturer.",
+      fullDescription: "Created digital branding, social media promotional banners, video edits, and educational course materials for Samantha Prasath — a renowned Science for Technology (SFT) tuition lecturer in Galle. Designed to increase student engagement and class enrollment on Facebook.",
       image: "/assets/img/work-img-5.png",
-      url: "https://example.com/seomedicine",
-      githubUrl: "https://github.com",
-      technologies: ["Next.js", "Technical SEO", "Tailwind CSS", "Vercel"],
+      url: "https://www.facebook.com/samantha.prasath",
+      githubUrl: "https://www.facebook.com/samantha.prasath",
+      technologies: ["Figma", "Photoshop", "Premiere Pro", "Social Media Strategy"],
     },
   ];
 
-  const categories = ["All", "Web Dev", "UI/UX Design", "Systems", "SEO & Apps"] as const;
+  const categories = ["All", "Web Dev", "Desktop app", "social media"] as const;
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
 
@@ -98,7 +98,7 @@ export function WorksSection() {
           View My <span>Work</span>
         </h2>
 
-        {/* Interactive Filter Tabs */}
+        {/* Interactive Filter Tabs (All, Web Dev, Desktop app, social media) */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
           {categories.map((cat) => {
             const isActive = activeCategory === cat;
@@ -106,7 +106,7 @@ export function WorksSection() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`relative px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                className={`relative px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 capitalize ${
                   isActive
                     ? "bg-[hsl(var(--hue),75%,60%)] text-[hsl(var(--hue),12%,8%)] shadow-[0_4px_20px_hsla(var(--hue),75%,60%,0.3)]"
                     : "bg-[hsl(var(--hue),8%,10%)] text-[hsl(var(--hue),4%,70%)] border border-[hsl(var(--hue),8%,20%)] hover:border-[hsl(var(--hue),75%,60%)] hover:text-[hsl(var(--hue),24%,98%)]"
@@ -129,12 +129,14 @@ export function WorksSection() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.35 }}
-                className="bianca-card group flex flex-col justify-between cursor-pointer hover:-translate-y-2 hover:border-[hsl(var(--hue),75%,60%)] transition-all duration-300"
-                onClick={() => setSelectedProject(project)}
+                className="bianca-card group flex flex-col justify-between hover:-translate-y-2 hover:border-[hsl(var(--hue),75%,60%)] transition-all duration-300"
               >
                 <div>
                   {/* Project Image & Badge */}
-                  <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-6 bg-[hsl(var(--hue),12%,8%)] border border-[hsl(var(--hue),8%,20%)]">
+                  <div
+                    className="relative w-full aspect-[16/10] rounded-xl overflow-hidden mb-6 bg-[hsl(var(--hue),12%,8%)] border border-[hsl(var(--hue),8%,20%)] cursor-pointer"
+                    onClick={() => setSelectedProject(project)}
+                  >
                     <Image
                       src={project.image}
                       alt={project.title}
@@ -154,19 +156,22 @@ export function WorksSection() {
 
                   {/* Title & Description */}
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-bold font-syne text-[hsl(var(--hue),24%,98%)] group-hover:text-[hsl(var(--hue),75%,60%)] transition-colors">
+                    <h3
+                      className="text-xl font-bold font-syne text-[hsl(var(--hue),24%,98%)] group-hover:text-[hsl(var(--hue),75%,60%)] transition-colors cursor-pointer"
+                      onClick={() => setSelectedProject(project)}
+                    >
                       {project.title}
                     </h3>
                   </div>
 
-                  <p className="text-sm text-[hsl(var(--hue),4%,70%)] mb-6 leading-relaxed line-clamp-2">
+                  <p className="text-sm text-[hsl(var(--hue),4%,70%)] mb-6 leading-relaxed line-clamp-3">
                     {project.description}
                   </p>
                 </div>
 
-                {/* Tech Chips */}
+                {/* Tech Chips & Explore Button opening URL in new tab */}
                 <div>
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-5">
                     {project.technologies.slice(0, 3).map((tech) => (
                       <span
                         key={tech}
@@ -177,9 +182,14 @@ export function WorksSection() {
                     ))}
                   </div>
 
-                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[hsl(var(--hue),75%,60%)] group-hover:translate-x-1 transition-transform">
-                    Explore Project <ArrowRight className="w-4 h-4" />
-                  </span>
+                  <a
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-[hsl(var(--hue),75%,60%)] hover:underline group-hover:translate-x-1 transition-transform"
+                  >
+                    Explore Project <ArrowUpRight className="w-4 h-4" />
+                  </a>
                 </div>
               </motion.div>
             ))}
@@ -251,16 +261,14 @@ export function WorksSection() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-[hsl(var(--hue),8%,20%)]">
-                  {selectedProject.url && (
-                    <a
-                      href={selectedProject.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-bianca text-sm py-3 px-6 rounded-full flex items-center gap-2"
-                    >
-                      Live Demo <ExternalLink className="w-4 h-4" />
-                    </a>
-                  )}
+                  <a
+                    href={selectedProject.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-bianca text-sm py-3 px-6 rounded-full flex items-center gap-2"
+                  >
+                    Open Live Demo / Link <ExternalLink className="w-4 h-4" />
+                  </a>
                   {selectedProject.githubUrl && (
                     <a
                       href={selectedProject.githubUrl}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, X, ShieldCheck } from "lucide-react";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({
@@ -10,6 +11,7 @@ export function ContactSection() {
     message: "",
   });
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [showModal, setShowModal] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,16 +30,14 @@ export function ContactSection() {
 
       if (res.ok) {
         setStatus("success");
+        setShowModal(true);
         setFormData({ name: "", email: "", message: "" });
-        setTimeout(() => setStatus("idle"), 5000);
       } else {
         setStatus("error");
-        setTimeout(() => setStatus("idle"), 5000);
       }
     } catch (error) {
       console.error("Error submitting contact form:", error);
       setStatus("error");
-      setTimeout(() => setStatus("idle"), 5000);
     }
   };
 
@@ -49,7 +49,7 @@ export function ContactSection() {
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 mt-12">
-          {/* Left Column: Contact Cards with Lucide React Icons */}
+          {/* Left Column: Contact Info Cards */}
           <div className="lg:col-span-5 flex flex-col space-y-6">
             {/* Email Card */}
             <div className="bianca-card flex items-start gap-5 hover:border-[hsl(var(--hue),75%,60%)] transition-colors">
@@ -174,19 +174,13 @@ export function ContactSection() {
                 className="btn-bianca w-full text-center py-4 rounded-xl font-semibold justify-center text-base flex items-center gap-2"
               >
                 {status === "loading" ? (
-                  <span>Sending...</span>
+                  <span>Logging Message...</span>
                 ) : (
                   <>
                     Send Message <Send className="w-5 h-5" />
                   </>
                 )}
               </button>
-
-              {status === "success" && (
-                <p className="text-sm text-emerald-400 font-medium text-center flex items-center justify-center gap-2">
-                  <CheckCircle className="w-4 h-4" /> Message sent successfully!
-                </p>
-              )}
 
               {status === "error" && (
                 <p className="text-sm text-rose-400 font-medium text-center flex items-center justify-center gap-2">
@@ -197,6 +191,47 @@ export function ContactSection() {
           </div>
         </div>
       </div>
+
+      {/* Interactive Success Popup Alert Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.85, y: 20 }}
+              className="relative w-full max-w-md bg-[hsl(var(--hue),8%,10%)] border border-[hsl(var(--hue),75%,60%)] rounded-3xl p-8 text-center shadow-[0_16px_50px_hsla(var(--hue),75%,60%,0.2)]"
+            >
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-5 right-5 text-[hsl(var(--hue),4%,70%)] hover:text-[hsl(var(--hue),24%,98%)] transition-colors p-1"
+                aria-label="Close modal"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="w-16 h-16 rounded-full bg-[hsl(var(--hue),75%,60%)]/20 text-[hsl(var(--hue),75%,60%)] flex items-center justify-center mx-auto mb-6 border border-[hsl(var(--hue),75%,60%)]/40">
+                <ShieldCheck className="w-10 h-10" />
+              </div>
+
+              <h3 className="text-2xl font-bold font-syne text-[hsl(var(--hue),24%,98%)] mb-3">
+                Message Sent &amp; Logged!
+              </h3>
+
+              <p className="text-sm text-[hsl(var(--hue),4%,70%)] leading-relaxed mb-8">
+                Thank you for reaching out! Your message details have been safely recorded into our system log file (<code className="text-[hsl(var(--hue),75%,60%)]">messages.log</code>). I will get back to you shortly.
+              </p>
+
+              <button
+                onClick={() => setShowModal(false)}
+                className="btn-bianca w-full py-3.5 rounded-full font-semibold justify-center text-sm"
+              >
+                Got It, Thank You! <CheckCircle className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
